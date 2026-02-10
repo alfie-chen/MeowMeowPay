@@ -1,0 +1,111 @@
+/* ── Design System ── */
+:root {
+  /* Colors */
+  --color-primary: hsl(260, 65%, 58%);
+  --color-primary-light: hsl(260, 65%, 72%);
+  --color-primary-dark: hsl(260, 65%, 44%);
+  --color-accent: hsl(340, 82%, 62%);
+  --color-accent-light: hsl(340, 82%, 75%);
+
+  --color-bg: hsl(240, 15%, 9%);
+  --color-bg-elevated: hsl(240, 12%, 13%);
+  --color-bg-card: hsl(240, 10%, 16%);
+  --color-surface: hsl(240, 8%, 20%);
+
+  --color-text: hsl(0, 0%, 95%);
+  --color-text-secondary: hsl(240, 5%, 65%);
+  --color-text-muted: hsl(240, 5%, 45%);
+
+  --color-border: hsl(240, 8%, 22%);
+
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.75rem;
+  --font-size-5xl: 3.5rem;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+  --shadow-lg: 0 8px 32px hsla(0, 0%, 0%, 0.5);
+  --shadow-glow: 0 0 40px hsla(260, 65%, 58%, 0.15);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  color-scheme: dark;
+}
+
+/* ── Light Mode ── */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg: hsl(240, 20%, 98%);
+    --color-bg-elevated: hsl(0, 0%, 100%);
+    --color-bg-card: hsl(0, 0%, 100%);
+    --color-surface: hsl(240, 15%, 94%);
+
+    --color-text: hsl(240, 20%, 12%);
+    --color-text-secondary: hsl(240, 5%, 40%);
+    --color-text-muted: hsl(240, 5%, 60%);
+
+    --color-border: hsl(240, 10%, 88%);
+
+    --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.08);
+    --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.1);
+    --shadow-lg: 0 8px 32px hsla(0, 0%, 0%, 0.12);
+    --shadow-glow: 0 0 40px hsla(260, 65%, 58%, 0.1);
+
+    color-scheme: light;
+  }
+}
+
+/* ── Reset & Base ── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100vh;
+}
