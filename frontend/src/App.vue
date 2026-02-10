@@ -1,5 +1,4 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <div class="landing">
@@ -17,9 +16,7 @@
         <h1 class="hero-title">
           MeowMeow<span class="hero-highlight">Pay</span>
         </h1>
-        <p class="hero-subtitle">
-          Something purrfect is on the way.
-        </p>
+        <p class="hero-subtitle">Something purrfect is on the way.....</p>
         <div class="hero-cat">🐾</div>
       </div>
     </main>
@@ -101,8 +98,15 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.15); opacity: 1; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
 }
 
 .hero-content {
@@ -133,7 +137,11 @@
 }
 
 .hero-highlight {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -152,8 +160,13 @@
 }
 
 @keyframes paw-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /* ── Footer ── */
