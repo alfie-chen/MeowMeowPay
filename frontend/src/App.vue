@@ -16,7 +16,7 @@
         <h1 class="hero-title">
           MeowMeow<span class="hero-highlight">Pay</span>
         </h1>
-        <p class="hero-subtitle">Something purrfect is on the way.....</p>
+        <p class="hero-subtitle">Something purrfect is on the way.</p>
         <div class="hero-cat">🐾</div>
       </div>
     </main>
