@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+__pycache__/
+*.pyc
+.venv/
+啟動專案.md
