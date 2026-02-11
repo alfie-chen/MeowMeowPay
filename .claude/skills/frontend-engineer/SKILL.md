@@ -1,5 +1,5 @@
 ---
-name: frontend-engineer
+name: fe
 description: Comprehensive frontend development assistance for building web applications, UI components, and debugging frontend issues. Use this skill whenever the user mentions building websites, web apps, React components, Vue applications, UI components, frontend bugs, styling issues, responsive design, state management, routing, forms, or any web development task. Even if they just say "build a dashboard" or "create a login page" or "fix this CSS", this skill should trigger. Also use for setting up build tools like Vite or webpack, configuring TypeScript, or any frontend tooling.
 ---
 
@@ -76,18 +76,21 @@ project-name/
 ### Technology Selection
 
 **React projects** (most common):
+
 - Use Vite for build tool (faster than CRA)
 - TypeScript by default unless user prefers JS
 - Functional components with hooks only
 - Use modern patterns: `useState`, `useEffect`, `useCallback`, `useMemo`, custom hooks
 
 **Vue projects**:
+
 - Use Vite
 - Vue 3 with Composition API
 - `<script setup>` syntax for cleaner code
 - TypeScript recommended
 
 **Vanilla projects**:
+
 - No build step needed for simple sites
 - Use ES6 modules if complexity warrants it
 - Consider adding Vite for development server even without frameworks
@@ -146,18 +149,18 @@ Every component should have:
 
 ```tsx
 // components/Button/Button.tsx
-import { ButtonHTMLAttributes } from 'react';
-import './Button.css';
+import { ButtonHTMLAttributes } from "react";
+import "./Button.css";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger';
-  size?: 'small' | 'medium' | 'large';
+  variant?: "primary" | "secondary" | "danger";
+  size?: "small" | "medium" | "large";
   isLoading?: boolean;
 }
 
 export function Button({
-  variant = 'primary',
-  size = 'medium',
+  variant = "primary",
+  size = "medium",
   isLoading = false,
   children,
   disabled,
@@ -175,7 +178,9 @@ export function Button({
           <span className="btn__spinner" aria-hidden="true" />
           <span className="sr-only">Loading...</span>
         </>
-      ) : children}
+      ) : (
+        children
+      )}
     </button>
   );
 }
@@ -187,15 +192,15 @@ export function Button({
 <!-- components/Button.vue -->
 <script setup lang="ts">
 interface Props {
-  variant?: 'primary' | 'secondary' | 'danger';
-  size?: 'small' | 'medium' | 'large';
+  variant?: "primary" | "secondary" | "danger";
+  size?: "small" | "medium" | "large";
   isLoading?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
-  variant: 'primary',
-  size: 'medium',
-  isLoading: false
+  variant: "primary",
+  size: "medium",
+  isLoading: false,
 });
 </script>
 
@@ -219,9 +224,10 @@ withDefaults(defineProps<Props>(), {
 ### Common Patterns
 
 **Form handling**:
+
 ```tsx
 function LoginForm() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -240,7 +246,7 @@ function LoginForm() {
       // Submit
       await submitForm(formData);
     } catch (error) {
-      setErrors({ general: 'Something went wrong' });
+      setErrors({ general: "Something went wrong" });
     } finally {
       setIsSubmitting(false);
     }
@@ -255,6 +261,7 @@ function LoginForm() {
 ```
 
 **Data fetching**:
+
 ```tsx
 function useUsers() {
   const [data, setData] = useState<User[]>([]);
@@ -262,8 +269,8 @@ function useUsers() {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    fetch('/api/users')
-      .then(res => res.json())
+    fetch("/api/users")
+      .then((res) => res.json())
       .then(setData)
       .catch(setError)
       .finally(() => setIsLoading(false));
@@ -292,24 +299,28 @@ function useUsers() {
 3. **Common issue patterns**
 
 **Styling issues**:
+
 - Check CSS specificity and cascade order
 - Verify responsive breakpoints
 - Look for flexbox/grid misconfigurations
 - Check for conflicting styles
 
 **State issues**:
+
 - Verify state updates are immutable
 - Check for stale closures in useEffect
 - Ensure proper dependency arrays
 - Look for race conditions
 
 **Performance issues**:
+
 - Use React DevTools Profiler
 - Check for unnecessary re-renders
 - Memoize expensive calculations
 - Lazy load components/routes
 
 **Accessibility issues**:
+
 - Run keyboard navigation test
 - Check ARIA labels and roles
 - Verify semantic HTML structure
@@ -328,6 +339,7 @@ Accessibility is not optional. Every component must be accessible because it's t
 ### Essential Accessibility Practices
 
 **Keyboard Navigation**:
+
 - All interactive elements must be keyboard accessible
 - Visible focus indicators on all focusable elements
 - Logical tab order (use tabindex=0 or -1, avoid positive values)
@@ -335,6 +347,7 @@ Accessibility is not optional. Every component must be accessible because it's t
 - Arrow keys for navigation in lists/menus
 
 **Semantic HTML**:
+
 ```html
 <!-- Good: Semantic elements convey meaning -->
 <nav>
@@ -350,6 +363,7 @@ Accessibility is not optional. Every component must be accessible because it's t
 ```
 
 **ARIA Labels**:
+
 - Use `aria-label` for elements without visible text
 - Use `aria-labelledby` to reference existing text
 - Use `aria-describedby` for additional context
@@ -357,6 +371,7 @@ Accessibility is not optional. Every component must be accessible because it's t
 - Use `role` when semantic HTML isn't available
 
 **Form Accessibility**:
+
 ```tsx
 <label htmlFor="email">Email</label>
 <input
@@ -374,6 +389,7 @@ Accessibility is not optional. Every component must be accessible because it's t
 ```
 
 **Screen Reader Support**:
+
 - Use `aria-live` for dynamic content updates
 - Use `role="status"` for non-critical updates
 - Use `role="alert"` for important messages
@@ -383,13 +399,14 @@ Accessibility is not optional. Every component must be accessible because it's t
 ### Common Accessibility Patterns
 
 **Modal Dialog**:
+
 ```tsx
 function Modal({ isOpen, onClose, title, children }) {
   useEffect(() => {
     if (isOpen) {
       // Trap focus in modal
       const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
@@ -398,11 +415,11 @@ function Modal({ isOpen, onClose, title, children }) {
 
       // Handle escape key
       const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
+        if (e.key === "Escape") onClose();
       };
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
 
-      return () => document.removeEventListener('keydown', handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
     }
   }, [isOpen, onClose]);
 
@@ -418,7 +435,9 @@ function Modal({ isOpen, onClose, title, children }) {
       <div className="modal-content">
         <h2 id="modal-title">{title}</h2>
         {children}
-        <button onClick={onClose} aria-label="Close dialog">×</button>
+        <button onClick={onClose} aria-label="Close dialog">
+          ×
+        </button>
       </div>
     </div>
   );
@@ -426,6 +445,7 @@ function Modal({ isOpen, onClose, title, children }) {
 ```
 
 **Loading States**:
+
 ```tsx
 <button disabled={isLoading} aria-busy={isLoading}>
   {isLoading ? (
@@ -434,7 +454,7 @@ function Modal({ isOpen, onClose, title, children }) {
       <span className="sr-only">Loading...</span>
     </>
   ) : (
-    'Submit'
+    "Submit"
   )}
 </button>
 ```
@@ -454,6 +474,7 @@ Use this hierarchy for styling:
 ### Modern CSS Patterns
 
 **CSS Variables for theming**:
+
 ```css
 :root {
   /* Colors */
@@ -482,6 +503,7 @@ Use this hierarchy for styling:
 ```
 
 **Flexbox for layouts**:
+
 ```css
 .container {
   display: flex;
@@ -492,6 +514,7 @@ Use this hierarchy for styling:
 ```
 
 **Grid for complex layouts**:
+
 ```css
 .grid-layout {
   display: grid;
@@ -501,6 +524,7 @@ Use this hierarchy for styling:
 ```
 
 **Responsive design**:
+
 ```css
 /* Mobile first approach */
 .card {
@@ -519,18 +543,21 @@ Use this hierarchy for styling:
 ### When to Use What
 
 **Local state (useState)**:
+
 - Component-specific data
 - UI state (open/closed, active tab)
 - Form inputs
 - Simple counters or toggles
 
 **Context (React.createContext)**:
+
 - Theme preferences
 - User authentication
 - Language/locale
 - Data needed by many components at different nesting levels
 
 **External state library (Zustand, Redux, etc.)**:
+
 - Complex application state
 - State shared across many unrelated components
 - State that needs to persist
@@ -555,7 +582,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check for existing session
-    checkAuth().then(setUser).finally(() => setIsLoading(false));
+    checkAuth()
+      .then(setUser)
+      .finally(() => setIsLoading(false));
   }, []);
 
   const login = async (credentials: Credentials) => {
@@ -577,7 +606,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 }
 ```
@@ -587,13 +616,14 @@ export function useAuth() {
 ### Common Performance Issues
 
 **Unnecessary re-renders**:
+
 ```tsx
 // Bad: Creates new object on every render
-<Component style={{ padding: 10 }} />
+<Component style={{ padding: 10 }} />;
 
 // Good: Stable reference
 const style = { padding: 10 };
-<Component style={style} />
+<Component style={style} />;
 
 // Use memo for expensive calculations
 const expensiveValue = useMemo(() => calculateValue(data), [data]);
@@ -605,9 +635,10 @@ const handleClick = useCallback(() => {
 ```
 
 **Large lists**:
+
 ```tsx
 // Use virtualization for long lists
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList } from "react-window";
 
 function VirtualizedList({ items }) {
   return (
@@ -617,19 +648,18 @@ function VirtualizedList({ items }) {
       itemSize={50}
       width="100%"
     >
-      {({ index, style }) => (
-        <div style={style}>{items[index].name}</div>
-      )}
+      {({ index, style }) => <div style={style}>{items[index].name}</div>}
     </FixedSizeList>
   );
 }
 ```
 
 **Code splitting**:
+
 ```tsx
 // Lazy load routes
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Settings = lazy(() => import('./pages/Settings'));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 function App() {
   return (
@@ -666,6 +696,7 @@ After creating or modifying frontend code:
 > [View the project](computer:///sessions/hopeful-lucid-edison/mnt/outputs/frontend-projects/dashboard/)
 >
 > To run:
+>
 > ```bash
 > cd /sessions/hopeful-lucid-edison/mnt/outputs/frontend-projects/dashboard
 > npm install
@@ -675,17 +706,20 @@ After creating or modifying frontend code:
 ## Adapting to User Expertise
 
 **Detect expertise level** from context:
+
 - Beginner: Asks basic questions, needs explanations
 - Intermediate: Knows syntax, needs guidance on patterns
 - Expert: Wants fast execution, minimal explanation
 
 **For beginners**:
+
 - Include code comments explaining why
 - Add links to documentation
 - Explain architectural decisions
 - Provide learning resources
 
 **For experts**:
+
 - Focus on code quality and efficiency
 - Use advanced patterns when appropriate
 - Minimal explanation unless asked
@@ -694,6 +728,7 @@ After creating or modifying frontend code:
 ## Common Scenarios
 
 ### "Build me a landing page"
+
 1. Ask about: purpose, target audience, key sections
 2. Create responsive HTML/CSS/JS structure
 3. Include hero section, features, CTA, footer
@@ -701,6 +736,7 @@ After creating or modifying frontend code:
 5. Provide deployment options
 
 ### "Create a dashboard"
+
 1. Ask about: data source, metrics to display, user roles
 2. Set up React/Vue with routing
 3. Create layout with sidebar navigation
@@ -709,6 +745,7 @@ After creating or modifying frontend code:
 6. Include loading and error states
 
 ### "Fix this bug"
+
 1. Analyze uploaded code or described issue
 2. Identify root cause
 3. Explain what's wrong and why
@@ -716,6 +753,7 @@ After creating or modifying frontend code:
 5. Suggest preventative measures
 
 ### "Add a feature"
+
 1. Understand existing code structure
 2. Match their coding patterns and style
 3. Create new components following their conventions
@@ -727,40 +765,42 @@ After creating or modifying frontend code:
 When the user wants to test their code:
 
 **Unit tests** (for utilities and hooks):
+
 ```tsx
 // Use Vitest or Jest
-import { render, screen } from '@testing-library/react';
-import { Button } from './Button';
+import { render, screen } from "@testing-library/react";
+import { Button } from "./Button";
 
-test('Button renders with text', () => {
+test("Button renders with text", () => {
   render(<Button>Click me</Button>);
-  expect(screen.getByText('Click me')).toBeInTheDocument();
+  expect(screen.getByText("Click me")).toBeInTheDocument();
 });
 
-test('Button calls onClick when clicked', () => {
+test("Button calls onClick when clicked", () => {
   const handleClick = vi.fn();
   render(<Button onClick={handleClick}>Click me</Button>);
-  screen.getByText('Click me').click();
+  screen.getByText("Click me").click();
   expect(handleClick).toHaveBeenCalledOnce();
 });
 ```
 
 **Integration tests** (for component interactions):
-```tsx
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { LoginForm } from './LoginForm';
 
-test('Login form submits with valid credentials', async () => {
+```tsx
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { LoginForm } from "./LoginForm";
+
+test("Login form submits with valid credentials", async () => {
   const user = userEvent.setup();
   render(<LoginForm />);
 
-  await user.type(screen.getByLabelText('Email'), 'user@example.com');
-  await user.type(screen.getByLabelText('Password'), 'password123');
-  await user.click(screen.getByRole('button', { name: /log in/i }));
+  await user.type(screen.getByLabelText("Email"), "user@example.com");
+  await user.type(screen.getByLabelText("Password"), "password123");
+  await user.click(screen.getByRole("button", { name: /log in/i }));
 
   await waitFor(() => {
-    expect(screen.getByText('Welcome!')).toBeInTheDocument();
+    expect(screen.getByText("Welcome!")).toBeInTheDocument();
   });
 });
 ```
