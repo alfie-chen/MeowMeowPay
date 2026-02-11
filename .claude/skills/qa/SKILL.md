@@ -30,6 +30,11 @@ Use these when designing tests from requirements/specifications without knowledg
 - **Exploratory Testing**: Session-based, charter-driven exploration. Combine simultaneous test design, execution, and learning. Use time-boxed sessions with clear charters and debrief notes. See Section 7 for detailed guidance.
 - **Classification Tree Method**: Identify test-relevant input dimensions, create a classification tree, and derive test cases by combining leaf nodes across dimensions. Provides a visual, systematic alternative to equivalence partitioning.
 - **Domain Analysis Testing**: Combine equivalence partitioning and boundary value analysis for multi-variable inputs. Identify valid and invalid domains in multi-dimensional input space, then select "on," "off," "in," and "out" points.
+- **Cause-Effect Graphing**: Map logical relationships between causes (inputs/conditions) and effects (outputs/actions) using a Boolean graph, then derive a decision table from it. More formal and systematic than jumping straight to decision tables, especially when requirements have complex logical dependencies (AND, OR, NOT, REQUIRES, MASKS). Referenced in ISTQB Advanced Test Analyst syllabus.
+- **Syntax Testing (Grammar-Based Testing)**: Test inputs that must conform to a defined syntax or grammar (e.g., email addresses, URLs, command-line arguments, query languages). Define the grammar (BNF/EBNF), then systematically generate both valid and invalid strings by mutating production rules. Essential for parsers and any input with a defined format.
+- **Fuzz Testing (Fuzzing)**: Provide random, malformed, unexpected, or boundary-violating inputs to trigger crashes, hangs, memory leaks, or unhandled exceptions. Categories: dumb fuzzing (completely random data), smart/generation-based fuzzing (inputs generated from a grammar or protocol spec), and mutation-based fuzzing (mutating existing valid inputs). Tools: AFL, libFuzzer, Jazzer, Peach Fuzzer.
+- **Model-Based Testing (MBT)**: Automatically generate tests from a formal model of the system (e.g., finite state machines, UML activity diagrams, Markov chains). The model captures expected behavior, and tools generate test sequences that cover the model. Provides systematic, exhaustive coverage of complex state spaces. Tools: GraphWalker, Spec Explorer, Conformiq.
+- **Risk-Based Testing**: Prioritize testing effort based on the probability and impact of failure for each feature or component. Risk assessment drives test scope, depth, and order of execution. High-risk areas (payment flows, authentication, data integrity) get deeper coverage; low-risk areas get lighter coverage. Defined in ISO 29119 and ISTQB Foundation syllabus as a key test management strategy.
 
 #### White Box Testing Techniques
 
@@ -41,6 +46,9 @@ Use these when you have access to internal code structure and need to measure st
 - **Path Coverage**: Ensure every possible execution path through the code is exercised. Often impractical for complex code — prioritize critical paths and use cyclomatic complexity to estimate the number of independent paths.
 - **Modified Condition/Decision Coverage (MC/DC)**: Each condition in a decision must independently affect the decision's outcome. The standard for safety-critical systems (DO-178C Level A). Provides strong coverage without the combinatorial explosion of full path coverage.
 - **Loop Coverage**: Test loops at their boundaries — zero iterations, one iteration, typical iterations, maximum iterations, and maximum+1 (if applicable).
+- **Data Flow Testing**: Track the flow of data through the program by analyzing define-use (def-use) pairs for each variable. Coverage criteria include All-defs (every definition reaches at least one use), All-uses (every def-use pair is exercised), and All-du-paths (every path between every def-use pair). Catches defects related to uninitialized variables, dead code, and incorrect data transformations.
+- **Mutation Testing**: Introduce small, deliberate faults (mutants) into the source code (e.g., changing `>` to `>=`, replacing `+` with `-`, removing a condition). Run the existing test suite against each mutant — if a test fails, the mutant is "killed." The mutation score (killed/total) measures test suite effectiveness. Tools: PIT (Java), mutmut/cosmic-ray (Python), Stryker (JavaScript/TypeScript).
+- **Basis Path Testing (McCabe's Technique)**: Use cyclomatic complexity to determine the minimum number of linearly independent paths through a program. Derive exactly that many test cases to achieve full independent path coverage. A practical compromise between statement coverage and full path coverage.
 
 #### Performance Testing Types
 
@@ -52,19 +60,84 @@ Apply these to validate non-functional quality attributes:
 - **Capacity Testing**: Determine the maximum number of concurrent users/transactions the system can handle while still meeting performance SLAs.
 - **Endurance Testing (Soak Testing)**: Run the system under sustained load over extended periods (hours/days) to detect memory leaks, resource exhaustion, and degradation over time.
 - **Concurrency Testing**: Verify correct behavior when multiple users perform the same operations simultaneously — race conditions, deadlocks, data integrity under concurrent writes.
+- **Spike Testing**: Test system behavior when subjected to sudden, extreme increases in load (spikes) followed by a return to normal. Focus on how quickly the system recovers and whether errors occur during the spike. Different from stress testing, which gradually increases load.
+- **Volume Testing (Flood Testing)**: Test system behavior when processing large volumes of data rather than concurrent users — e.g., importing 10 million records, a database with 500GB of data, processing 100,000 transactions in a batch. Focus on data handling capacity.
+- **Latency Testing**: Specifically measure and test the delay between a request and the beginning of the response, as distinct from total response time. Critical for real-time systems, streaming, gaming, and financial trading applications.
+
+#### Security Testing Techniques
+
+Apply these to identify vulnerabilities and ensure the system is resistant to attacks:
+
+- **Static Application Security Testing (SAST)**: Analyze source code, bytecode, or binaries for security vulnerabilities without executing the application. A shift-left approach that catches issues during development. Tools: SonarQube, Semgrep, CodeQL, Checkmarx, Fortify.
+- **Dynamic Application Security Testing (DAST)**: Test the running application by sending malicious requests and analyzing responses for vulnerabilities. Black-box security testing that finds runtime issues SAST cannot. Tools: OWASP ZAP, Burp Suite, Nikto.
+- **Penetration Testing**: Simulated cyberattack against the system to find exploitable vulnerabilities. Types: black-box (no prior knowledge), white-box (full knowledge of architecture and source code), grey-box (partial knowledge). Follow methodologies like OWASP Testing Guide, PTES, or OSSTMM.
+- **Vulnerability Scanning**: Automated scanning for known vulnerabilities in dependencies, configurations, and infrastructure. Catches outdated libraries with known CVEs and misconfigurations. Tools: Nessus, Qualys, Snyk, OWASP Dependency-Check, Trivy (container scanning).
+- **OWASP Top 10 Testing**: Systematic testing against the OWASP Top 10 categories — Broken Access Control, Cryptographic Failures, Injection, Insecure Design, Security Misconfiguration, Vulnerable and Outdated Components, Identification and Authentication Failures, Software and Data Integrity Failures, Security Logging and Monitoring Failures, and Server-Side Request Forgery (SSRF).
+- **API Security Testing**: Test APIs specifically for authorization flaws, broken object-level authorization (BOLA/IDOR), mass assignment, rate limiting bypass, injection via API parameters, improper input validation, and insecure direct object references. Guided by the OWASP API Security Top 10.
+
+#### Accessibility & Usability Testing
+
+Apply these to ensure the system is usable by all users, including those with disabilities:
+
+- **Accessibility Testing (a11y)**: Test that the application is usable by people with disabilities, conforming to WCAG 2.1/2.2 at levels A, AA, AAA. Testing areas: keyboard navigation, screen reader compatibility (NVDA, JAWS, VoiceOver), color contrast, focus management, ARIA attributes, alt text, form labeling. Tools: axe-core, Lighthouse accessibility audit, Pa11y, WAVE.
+- **Usability Testing**: Evaluate the system by observing real or representative users performing tasks. Measures effectiveness, efficiency, and satisfaction. Types: moderated (facilitator-guided), unmoderated (users complete tasks independently), hallway testing (quick, informal), and think-aloud protocol (users verbalize their thought process while interacting).
+- **Heuristic Evaluation**: Expert evaluation of the UI against established usability principles (heuristics), such as Nielsen's 10 Usability Heuristics. Not user testing, but expert-based review that identifies violations of best practices in interface design.
+
+#### Reliability & Resilience Testing
+
+Apply these to verify the system's ability to withstand and recover from failures:
+
+- **Chaos Engineering**: Deliberately inject failures into production or pre-production environments to verify resilience. Categories of experiments: killing instances/containers, simulating network partitions, introducing latency, disk full scenarios, CPU/memory exhaustion. Follow the Principles of Chaos Engineering. Tools: Chaos Monkey, Gremlin, Litmus, Chaos Toolkit, AWS Fault Injection Simulator.
+- **Failover Testing**: Test that backup systems, redundant components, and disaster recovery mechanisms activate correctly when primary components fail. Verify RTO (Recovery Time Objective) and RPO (Recovery Point Objective) are met.
+- **Recovery Testing**: Test the system's ability to recover from crashes, hardware failures, data corruption, and other disasters. Measure how long recovery takes and whether data integrity is maintained after recovery.
+- **Fault Injection Testing**: Deliberately introduce faults at the code, middleware, OS, or hardware level to verify error handling paths. Includes exception injection, network fault injection, disk I/O fault injection, and clock skew injection. Broader than chaos engineering in scope.
+
+#### API-Specific Testing Techniques
+
+Apply these when testing APIs for correctness, reliability, and contract adherence:
+
+- **Contract Testing (Consumer-Driven Contracts)**: Verify that the API producer and consumer agree on the API contract (request/response format, status codes, headers). Each consumer defines its expected interactions, and the provider verifies it satisfies all consumer contracts. Critical for microservice architectures. Tools: Pact, Spring Cloud Contract.
+- **Schema Validation Testing**: Validate API responses against a defined schema (JSON Schema, OpenAPI/Swagger specification, GraphQL schema). Catches structural regressions such as missing fields, incorrect types, and unexpected nulls automatically.
+- **API Idempotency Testing**: Verify that repeated identical API calls produce the same result and do not cause unintended side effects (particularly for POST and PUT operations). Essential for payment systems and any operation where retries may occur.
+- **API Rate Limiting and Throttling Testing**: Test that rate limiting is correctly enforced, returns appropriate 429 status codes, includes correct Retry-After headers, and does not allow bypass through header manipulation or parameter tampering.
+
+#### Modern Testing Practices
+
+Apply these emerging practices to improve test quality and shift testing across the lifecycle:
+
+- **Shift-Left Testing**: Move testing activities earlier in the SDLC — static analysis during development, unit testing by developers, TDD, code review as a testing activity, early performance testing, and API testing before UI development. The goal is to find defects when they are cheapest to fix.
+- **Property-Based Testing**: Instead of specifying concrete inputs and expected outputs, define properties that should always hold true, and let the framework generate hundreds of random inputs automatically. Finds edge cases humans wouldn't think of. Tools: Hypothesis (Python), fast-check (JavaScript), QuickCheck (Haskell).
+- **Visual Regression Testing**: Automated pixel-by-pixel comparison of screenshots to detect unintended visual changes between builds. Different from design validation — this is current-build-vs-previous-build comparison. Tools: Percy, Chromatic, BackstopJS, Playwright visual comparison.
+- **Snapshot Testing**: Capture a "snapshot" of component output (rendered HTML, API response, serialized object) and compare future test runs against the stored snapshot to detect unintended changes. Useful for catching regressions in component structure. Tools: Jest snapshot testing, pytest-snapshot.
+- **Continuous Testing**: Integrate automated testing throughout the CI/CD pipeline at every stage — commit, build, integration, staging, production. Goes beyond running tests in CI to encompass a holistic strategy where testing gates control the delivery pipeline end-to-end.
+
+#### Compatibility Testing
+
+Apply these to verify the system works correctly across different environments and configurations:
+
+- **Cross-Browser Testing**: Systematic testing across different browsers (Chrome, Firefox, Safari, Edge) and browser versions. Define a browser matrix based on analytics data, test rendering consistency, JavaScript behavior differences, and CSS compatibility. Tools: BrowserStack, Sauce Labs, LambdaTest, Playwright multi-browser.
+- **Backward Compatibility Testing**: Verify that a new version of the system remains compatible with data, APIs, configurations, and integrations from previous versions. Critical for APIs with external consumers, database migrations, and file format changes.
+- **Device Compatibility Testing**: Test across different device types, screen sizes, resolutions, and hardware configurations. Includes testing for device-specific input methods (touch, stylus, mouse, keyboard) and platform-specific behaviors (iOS vs Android, desktop vs tablet vs mobile).
 
 #### Applying Methodologies to Requirements
 
 When analyzing any requirement, follow this process:
 
 1. **Identify input variables and their domains** → Apply Equivalence Partitioning + Boundary Value Analysis
-2. **Map business rules** → Apply Decision Table Testing
+2. **Map business rules** → Apply Decision Table Testing + Cause-Effect Graphing for complex logic
 3. **Identify stateful behavior** → Apply State Transition Testing
 4. **Check for multi-parameter interactions** → Apply Pairwise Testing if parameter count is high
 5. **Trace use case flows** → Apply Use Case Testing
-6. **Apply experience-based intuition** → Apply Error Guessing
-7. **Assess code complexity** → Apply appropriate White Box techniques for automation coverage targets
-8. **Identify NFRs** → Apply relevant Performance Testing types
+6. **Identify structured inputs** → Apply Syntax Testing for inputs with defined formats
+7. **Apply experience-based intuition** → Apply Error Guessing
+8. **Assess code complexity** → Apply appropriate White Box techniques (including Data Flow and Mutation Testing for test suite quality)
+9. **Identify NFRs** → Apply relevant Performance Testing types (including Spike, Volume, Latency)
+10. **Assess security surface** → Apply Security Testing techniques (SAST, DAST, OWASP Top 10, API Security)
+11. **Evaluate accessibility requirements** → Apply Accessibility Testing (WCAG compliance) and Usability Testing
+12. **Assess reliability needs** → Apply Chaos Engineering, Failover, and Recovery Testing for critical systems
+13. **Check API contracts** → Apply Contract Testing, Schema Validation, and Idempotency Testing
+14. **Verify compatibility scope** → Apply Cross-Browser, Backward Compatibility, and Device Compatibility Testing
+15. **Consider risk profile** → Apply Risk-Based Testing to prioritize all of the above
 
 For each test case derived, determine whether it should be **manual**, **automated**, or **both**, based on:
 
