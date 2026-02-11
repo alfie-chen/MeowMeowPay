@@ -1,0 +1,61 @@
+{
+  "skill_name": "frontend-engineer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a simple todo list app in React with TypeScript. It should let me add tasks, mark them as complete, and delete them.",
+      "expected_output": "A complete React + TypeScript todo app with proper file structure",
+      "files": [],
+      "expectations": [
+        "Creates a complete project structure in /sessions/hopeful-lucid-edison/mnt/outputs/frontend-projects/",
+        "Includes package.json with React, TypeScript, and Vite dependencies",
+        "Includes index.html as entry point",
+        "Creates src/ directory with components",
+        "Todo component has TypeScript types/interfaces for props and state",
+        "Uses React hooks (useState) for state management",
+        "Includes ARIA labels for accessibility (e.g., aria-label on buttons)",
+        "Has semantic HTML (e.g., <ul>, <li>, <button> elements)",
+        "Includes README.md with setup and run instructions",
+        "Code includes proper keyboard accessibility (buttons are focusable)",
+        "Handles empty state (when there are no todos)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Build a responsive navigation bar component in React. It should have a hamburger menu on mobile and full menu on desktop. Include Home, About, Services, and Contact links.",
+      "expected_output": "A responsive navigation component with mobile hamburger menu",
+      "files": [],
+      "expectations": [
+        "Creates a Navigation or Navbar component file",
+        "Includes TypeScript types for props",
+        "Has responsive CSS with media queries or breakpoints",
+        "Mobile view shows hamburger menu icon",
+        "Desktop view shows horizontal navigation links",
+        "Includes aria-label or aria-expanded for hamburger button",
+        "Uses semantic <nav> element",
+        "Menu items are keyboard accessible",
+        "Includes proper ARIA attributes for expanded/collapsed state",
+        "CSS handles both mobile (<768px) and desktop views"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a login form with email and password fields. Add validation - email should be required and valid format, password should be at least 8 characters. Show error messages.",
+      "expected_output": "A login form component with validation and error handling",
+      "files": [],
+      "expectations": [
+        "Creates a LoginForm component",
+        "Uses controlled inputs with useState",
+        "Includes email validation (checks for valid email format)",
+        "Includes password length validation (minimum 8 characters)",
+        "Displays error messages for invalid inputs",
+        "Uses proper form accessibility (label with htmlFor, input with id)",
+        "Includes aria-invalid attribute for invalid fields",
+        "Includes aria-describedby linking to error messages",
+        "Error messages have role='alert' or similar for screen readers",
+        "Form has onSubmit handler that prevents default",
+        "Includes TypeScript types for form data and errors"
+      ]
+    }
+  ]
+}
