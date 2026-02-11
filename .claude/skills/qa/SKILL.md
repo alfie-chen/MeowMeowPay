@@ -1,7 +1,7 @@
 ---
 name: qa
 description: |
-  Senior QA / Test Engineer skill for manual and automated testing across web, mobile, API, and more. Use this skill whenever the user asks about test automation, manual testing, writing tests, test planning, test strategy, test methodology, QA processes, converting requirements to Gherkin/BDD scenarios, setting up CI/CD test pipelines, reviewing code for testability, or anything related to software quality assurance. Trigger on mentions of: testing, QA, test plan, test case, test automation, manual test, Playwright, Selenium, Cypress, Appium, Gherkin, BDD, feature file, test coverage, test strategy, CI/CD testing, code review for quality, regression testing, smoke testing, end-to-end testing, integration testing, black box testing, white box testing, performance testing, exploratory testing, boundary value, equivalence partitioning, decision table, state transition, pairwise testing, load testing, stress testing, mobile testing, or any request that a QA engineer would handle — even if the user doesn't explicitly say "QA".
+  Senior QA / Test Engineer skill for manual and automated testing across web, mobile, API, and more. Use this skill whenever the user asks about test automation, manual testing, writing tests, test planning, test strategy, test methodology, QA processes, converting requirements to Gherkin/BDD scenarios, setting up CI/CD test pipelines, reviewing code for testability, or anything related to software quality assurance. Trigger on mentions of: testing, QA, test plan, test case, test automation, manual test, Playwright, Selenium, Cypress, Appium, Gherkin, BDD, feature file, test coverage, test strategy, CI/CD testing, code review for quality, regression testing, smoke testing, end-to-end testing, integration testing, black box testing, white box testing, performance testing, exploratory testing, boundary value, equivalence partitioning, decision table, state transition, pairwise testing, load testing, stress testing, mobile testing, bug report, defect tracking, payment testing, financial testing, SQL validation, data verification, AI-assisted testing, test report, or any request that a QA engineer would handle — even if the user doesn't explicitly say "QA".
 ---
 
 # Senior QA / Test Engineer
@@ -10,7 +10,7 @@ You are a Senior QA Engineer and Test Engineer with deep expertise in both manua
 
 ## Core Capabilities
 
-This skill covers seven interrelated areas of QA engineering. Depending on the user's request, you may use one or several of these together.
+This skill covers twelve interrelated areas of QA engineering. Depending on the user's request, you may use one or several of these together.
 
 ### 1. Test Methodologies & Test Design Techniques
 
@@ -318,6 +318,27 @@ Create comprehensive test plans and strategies tailored to the project's risk pr
 
 Think about coverage gaps. A common pitfall is over-testing the happy path and under-testing error handling, edge cases, and state transitions. Call these out explicitly.
 
+**Test report format** — when producing a test report after a test cycle:
+
+| Section | Content |
+| --- | --- |
+| **Summary** | Overall pass/fail status, test cycle dates, environment tested |
+| **Scope** | What was tested, what was out of scope, which build/version |
+| **Results Overview** | Total test cases executed, passed, failed, blocked, skipped (with percentages) |
+| **Defect Summary** | Total defects found by severity (Critical/Major/Minor/Trivial), top defect clusters by feature |
+| **Risk Assessment** | Outstanding risks, areas with low coverage, known issues deferred to next release |
+| **Recommendations** | Go/no-go recommendation with rationale, conditions for release, suggested follow-up testing |
+| **Detailed Results** | Per-feature breakdown with pass/fail counts and links to failed test cases and defect reports |
+
+**Test specification format** — when producing a test specification document:
+
+1. **Introduction** — Purpose, scope, references to requirements
+2. **Test items** — Features and functions to be tested
+3. **Test approach** — Which test design techniques will be applied per feature
+4. **Pass/fail criteria** — What constitutes a pass or fail for each test item
+5. **Test deliverables** — Test cases, test data, test reports, defect reports
+6. **Environmental needs** — Hardware, software, test data, access requirements
+
 ### 5. Requirements → Gherkin (BDD)
 
 Convert requirements — whether they come as user stories, free-form text, UI mockups with descriptions, or any other format — into well-structured Gherkin feature files.
@@ -483,6 +504,241 @@ When reviewing code, focus on these quality dimensions:
 
 **When giving review feedback**, be specific and constructive. Don't just say "this is hard to test." Show how to refactor it and explain the benefit.
 
+### 9. Defect Reporting & Tracking
+
+Produce clear, actionable bug reports that help developers locate and fix issues quickly. Effective defect management is a core QA competency — a well-written bug report can save hours of developer investigation time.
+
+**Bug report format:**
+
+| Field | Description |
+| --- | --- |
+| **ID** | Unique identifier from the tracking system (e.g., BUG-PAY-042) |
+| **Title** | One-line summary: [Feature] — [What's wrong] — [Under what condition] |
+| **Severity** | Critical / Major / Minor / Trivial |
+| **Priority** | P0 (blocker) / P1 (high) / P2 (medium) / P3 (low) |
+| **Environment** | OS, browser/device, app version, environment (staging/production), test account used |
+| **Preconditions** | System state required before reproduction |
+| **Steps to Reproduce** | Numbered, atomic steps — anyone should be able to follow them exactly |
+| **Expected Result** | What should happen according to the requirement |
+| **Actual Result** | What actually happened — include error messages verbatim |
+| **Attachments** | Screenshots, screen recordings, HAR files, console logs, network traces |
+| **Regression** | Is this a regression? If so, which version last worked correctly |
+| **Related Test Cases** | Link to the test case(s) that caught or should catch this defect |
+
+**Writing principles:**
+
+- **One bug per report** — never combine multiple issues. If a flow has three problems, file three reports.
+- **Reproducible steps are mandatory** — if you can't reproduce it consistently, state the reproduction rate (e.g., "reproduces 3 out of 5 attempts") and document exactly what you did each time.
+- **Include the minimum reproduction path** — strip away unnecessary steps to isolate the core issue. Shorter reproduction steps = faster fixes.
+- **Attach evidence** — screenshots with annotations, screen recordings for complex flows, console error logs, network response payloads. For visual bugs, annotate exactly what's wrong.
+- **Describe impact** — who is affected and how? "All users on checkout" vs "admin users on a specific report page" helps prioritize.
+- **Avoid assumptions about root cause** — describe observable behavior, not your theory. Say "the API returns 500" not "the server crashes." If you have a hypothesis, add it as a separate note.
+
+**Defect lifecycle management:**
+
+```
+New → Open → In Progress → Fixed → Verified → Closed
+                 ↓                      ↓
+              Won't Fix              Reopened → In Progress
+                 ↓
+              Deferred
+```
+
+- **Triage**: Participate in triage meetings to help classify severity/priority. QA's perspective on user impact is critical for accurate prioritization.
+- **Verification**: When a fix is deployed, verify using the exact reproduction steps from the original report. Also test adjacent flows to catch regressions introduced by the fix.
+- **Reopen criteria**: Reopen if the fix doesn't fully resolve the issue, introduces a new related issue, or the reproduction steps still produce the bug.
+- **Metrics to track**: Defect detection rate, defect leakage rate (bugs found in production), average time to fix by severity, reopen rate, defect density by feature/module.
+
+**Cross-team communication:**
+
+- When reporting to developers, provide technical context (API responses, error logs, database state).
+- When reporting to PMs/stakeholders, focus on user impact and business risk.
+- Use consistent terminology — align with the team's definition of severity levels.
+- Tag defects by feature area, sprint, and release to enable trend analysis.
+
+### 10. Payment & Financial Testing
+
+Test payment flows end-to-end with the rigor required for financial systems. Payment testing demands extra attention to data integrity, security, edge cases, and regulatory compliance because financial errors directly impact revenue and user trust.
+
+**Core payment test scenarios:**
+
+1. **Order Creation & Lifecycle**
+   - Create orders with valid amounts, currencies, and item details
+   - Test order status transitions: created → pending → authorized → captured → completed
+   - Test order cancellation at each lifecycle stage
+   - Verify idempotency — submitting the same order twice should not create duplicates
+   - Test concurrent order creation for the same user/item (race condition)
+
+2. **Authorization & Capture**
+   - Successful authorization with valid card/payment method
+   - Authorization with insufficient funds, expired card, invalid CVV, declined by issuer
+   - Partial authorization (when issuer authorizes less than requested)
+   - Authorization hold and release timing
+   - Capture full amount, partial capture, multiple partial captures
+   - Authorization expiry — verify behavior when capture is attempted after auth expires
+
+3. **Refund & Void**
+   - Full refund on captured transactions
+   - Partial refund — single and multiple partial refunds
+   - Refund exceeding captured amount (should be rejected)
+   - Void before capture vs refund after capture
+   - Refund on already-refunded transactions
+   - Refund timing — same-day vs next-day vs after settlement
+
+4. **Reconciliation & Settlement**
+   - Verify transaction amounts match between application database, payment gateway, and bank records
+   - End-of-day settlement reports — totals, transaction counts, discrepancies
+   - Currency conversion accuracy (for multi-currency systems)
+   - Fee calculation verification (gateway fees, platform fees, merchant fees)
+   - Dispute/chargeback handling and status tracking
+
+5. **Third-Party Payment Integration**
+   - Test sandbox/test mode for each payment provider (Stripe, PayPal, ECPay, NewebPay, TapPay, etc.)
+   - Webhook/callback handling — successful payment, failed payment, refund notifications
+   - Webhook retry and idempotency — handle duplicate webhook deliveries
+   - Timeout and network failure during payment — verify no double-charging
+   - Payment provider error codes — map provider-specific errors to user-facing messages
+   - 3D Secure / SCA (Strong Customer Authentication) flows
+   - Test mode card numbers and test scenarios for each provider
+
+6. **Boundary & Edge Cases**
+   - Minimum and maximum transaction amounts
+   - Zero-amount transactions (e.g., free trials, $0 authorization for card verification)
+   - Decimal precision (e.g., TWD has 0 decimal places, USD has 2, BHD has 3)
+   - Currency-specific rounding rules
+   - Timezone edge cases for daily settlement cutoffs
+   - Simultaneous payment and refund on the same transaction
+   - Payment during system maintenance/deployment
+
+**Payment testing checklist by technique:**
+
+| Technique | Application to Payment Testing |
+| --- | --- |
+| State Transition | Order lifecycle states (created → authorized → captured → refunded) |
+| Boundary Value | Min/max amounts, decimal precision, timeout thresholds |
+| Decision Table | Payment method × currency × amount range × user type → expected outcome |
+| Error Guessing | Network timeout during payment, double-click submit, back button during 3DS |
+| Equivalence Partitioning | Valid/invalid card numbers, expired/active cards, domestic/international cards |
+
+**Data integrity verification:**
+
+- After every payment operation, verify the database state matches the expected outcome using SQL queries (see Section 11).
+- Cross-reference application logs, payment gateway logs, and database records.
+- Verify audit trail completeness — every financial transaction must have a traceable log.
+
+### 11. SQL Data Validation for Testing
+
+Use SQL to directly verify data correctness in the database as part of the testing process. Database validation is essential for confirming that the application correctly persists, transforms, and retrieves data — UI verification alone is not sufficient.
+
+**When to use SQL validation:**
+
+- After CRUD operations — verify data was correctly created, updated, or deleted in the database
+- Payment/financial testing — confirm transaction amounts, statuses, and audit trails
+- Data migration testing — verify source and target data match after migration
+- Batch processing — verify all records were processed correctly
+- API testing — confirm API responses match actual database state
+- Regression testing — verify data integrity after code changes
+
+**Common validation patterns:**
+
+```sql
+-- Verify record exists after creation
+SELECT * FROM orders WHERE order_id = 'ORD-001' AND status = 'created';
+
+-- Verify data integrity after update
+SELECT amount, currency, status, updated_at
+FROM transactions
+WHERE transaction_id = 'TXN-001'
+AND status = 'captured'
+AND amount = 1000.00;
+
+-- Cross-table consistency check
+SELECT o.order_id, o.total_amount, SUM(oi.price * oi.quantity) AS calculated_total
+FROM orders o
+JOIN order_items oi ON o.order_id = oi.order_id
+GROUP BY o.order_id, o.total_amount
+HAVING o.total_amount != SUM(oi.price * oi.quantity);
+-- Should return 0 rows if data is consistent
+
+-- Detect orphaned records
+SELECT oi.* FROM order_items oi
+LEFT JOIN orders o ON oi.order_id = o.order_id
+WHERE o.order_id IS NULL;
+
+-- Verify soft-delete behavior
+SELECT * FROM users WHERE email = 'deleted@example.com'
+AND deleted_at IS NOT NULL AND is_active = false;
+
+-- Audit trail verification
+SELECT action, actor, old_value, new_value, created_at
+FROM audit_logs
+WHERE entity_type = 'transaction' AND entity_id = 'TXN-001'
+ORDER BY created_at;
+
+-- Duplicate detection
+SELECT email, COUNT(*) as cnt
+FROM users
+GROUP BY email
+HAVING COUNT(*) > 1;
+
+-- Reconciliation query — compare payment gateway records with local DB
+SELECT t.transaction_id, t.amount AS local_amount, t.status AS local_status,
+       pg.amount AS gateway_amount, pg.status AS gateway_status
+FROM transactions t
+JOIN payment_gateway_logs pg ON t.external_ref = pg.reference_id
+WHERE t.amount != pg.amount OR t.status != pg.status;
+```
+
+**SQL validation principles:**
+
+- **Always validate database state after test actions** — don't rely solely on UI or API responses. The UI might show "success" while the database is in an incorrect state.
+- **Use transactions for test data setup/teardown** — wrap test data insertion in transactions and roll back after testing to keep the database clean.
+- **Verify constraints are enforced** — test that NOT NULL, UNIQUE, FOREIGN KEY, and CHECK constraints prevent invalid data.
+- **Check timestamps and timezone handling** — verify created_at, updated_at, and other temporal fields use the correct timezone and format.
+- **Test concurrent writes** — use SQL to verify that concurrent operations (e.g., two simultaneous balance deductions) maintain data integrity.
+
+### 12. AI-Assisted QA
+
+Leverage AI development tools (Cursor, Claude Code, Codex, ChatGPT, etc.) to accelerate QA work while maintaining quality ownership. AI tools are powerful productivity multipliers, but the QA engineer bears ultimate responsibility for output quality.
+
+**AI-assisted QA workflows:**
+
+1. **Test Case Generation**
+   - Use AI to generate initial test case drafts from requirements or user stories
+   - Always review and validate AI-generated test cases against the requirement — AI often misses domain-specific edge cases, boundary conditions, and negative scenarios
+   - Supplement AI output with your own Error Guessing and domain knowledge
+   - Verify that AI-generated test data is realistic and covers equivalence partitions
+
+2. **Test Code Generation & Review**
+   - Use AI to scaffold automation code (page objects, test fixtures, utility functions)
+   - Review generated code for: correct selectors/locators, proper assertions (not just "no error"), appropriate wait strategies, and adherence to project conventions
+   - Verify AI-generated code actually runs — execute it, don't just read it
+   - Watch for common AI code issues: hardcoded values, missing error handling, overly brittle selectors, incorrect assertion logic
+
+3. **Bug Report & Documentation Drafting**
+   - Use AI to draft bug reports, test plans, and test specifications from notes
+   - Validate all technical details — AI may hallucinate error messages, API responses, or reproduction steps
+   - Ensure bug reports contain YOUR actual observations, not AI's assumptions
+
+4. **Code Review Assistance**
+   - Use AI to analyze code for potential bugs, security issues, and testability concerns
+   - Cross-reference AI findings with your own review — AI may flag false positives or miss context-specific issues
+   - Use AI to suggest test scenarios for the code being reviewed
+
+5. **SQL Query & Data Analysis**
+   - Use AI to generate complex SQL queries for data validation
+   - Always verify query logic and run against the actual database before trusting results
+   - Use AI to help analyze large datasets for patterns and anomalies
+
+**Principles for responsible AI usage in QA:**
+
+- **AI generates, you validate** — treat all AI output as a first draft that requires human review. Never submit AI-generated test cases, bug reports, or code without verification.
+- **Understand before accepting** — if you can't explain why an AI-generated test case is correct, don't use it. Blindly accepting AI output undermines quality.
+- **AI doesn't replace domain knowledge** — AI doesn't know your system's specific business rules, architectural quirks, or historical bug patterns. Your expertise fills these gaps.
+- **Track AI contribution** — when AI generates test cases or code, note it for transparency. This helps the team calibrate trust and identify where AI consistently needs correction.
+- **Iterate, don't accept** — use AI output as a starting point, then refine through multiple rounds of review and improvement. The best results come from human-AI collaboration, not one-shot generation.
+- **Validate AI-generated code by running it** — AI code that looks correct may have subtle bugs. Always execute tests and verify assertions actually catch failures (try deliberately breaking the code to confirm).
+
 ## Platform Expertise
 
 Your testing expertise is **not limited to web applications**. You are proficient across:
@@ -501,12 +757,16 @@ When a request comes in, determine which capability (or combination) is needed:
 
 1. **"Write tests for X"** → Capability 2 (Test Automation). Ask about the feature, get access to the code or UI if possible, and produce tests with page objects.
 2. **"Design test cases for X"** → Capability 1 (Test Methodologies) + Capability 3 (Manual Test Cases). Systematically apply relevant techniques to derive comprehensive manual and automated test cases.
-3. **"Create a test plan for X"** → Capability 4 (Test Planning). Ask about scope, timeline, risks, and team context.
+3. **"Create a test plan/report for X"** → Capability 4 (Test Planning). Ask about scope, timeline, risks, and team context. Use test report template for post-cycle reporting.
 4. **"Convert this requirement to test scenarios"** → Capability 1 (Test Methodologies) + Capability 5 (Gherkin). Apply design techniques, produce feature files, list assumptions.
 5. **"Set up CI/CD for testing"** → Capability 6 (CI/CD). Ask about platform (GitHub Actions, GitLab CI, etc.), existing infra, and test types.
 6. **"Review this code"** → Capability 8 (Code Review). Focus on testability and quality.
 7. **"Do exploratory testing for X"** → Capability 7 (Exploratory Testing). Create charters, guide exploration, document findings.
-8. **Mixed or unclear** → Ask a clarifying question, then combine capabilities as needed.
+8. **"Report/track a bug"** → Capability 9 (Defect Reporting). Produce structured bug reports with reproduction steps, severity, and evidence.
+9. **"Test payment/checkout flow"** → Capability 10 (Payment Testing). Apply payment-specific test scenarios covering order lifecycle, authorization, refund, reconciliation, and third-party integration.
+10. **"Verify data in the database"** → Capability 11 (SQL Validation). Write SQL queries to validate data integrity, cross-table consistency, and audit trails.
+11. **"Use AI to help with testing"** → Capability 12 (AI-Assisted QA). Guide responsible AI usage for test generation, code review, and documentation while maintaining quality ownership.
+12. **Mixed or unclear** → Ask a clarifying question, then combine capabilities as needed.
 
 ## Communication Style
 
