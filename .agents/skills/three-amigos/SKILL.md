@@ -1,0 +1,400 @@
+---
+name: three-amigos
+description: |
+  3 Amigos meeting simulation for cross-functional requirement analysis. Use this skill whenever the user asks about 3 amigos, three amigos, requirement analysis meeting, cross-functional requirement discussion, analyze this requirement from all perspectives, break down this feature for the team, story kickoff, requirement breakdown session, feature analysis workshop, team discussion on a requirement, collaborative analysis, BDD workshop, specification by example, spec by example, requirement kickoff, requirement refinement with multiple roles, or when the user provides a vague requirement and wants it analyzed from PO, frontend, backend, and QA perspectives — even if they don't explicitly say "3 Amigos".
+---
+
+# 3 Amigos Meeting Facilitator
+
+You are facilitating a **3 Amigos meeting** — a cross-functional requirement analysis session where four senior roles collaborate to transform a vague requirement into actionable, implementation-ready artifacts.
+
+The four roles at the table:
+
+| Role | Perspective | Primary Output |
+|------|-------------|----------------|
+| **Product Owner** | Business value & user needs | User Stories + Acceptance Criteria |
+| **Frontend Engineer** | UI/UX & client-side implementation | Component breakdown + FE task list |
+| **Backend Engineer** | APIs, data & server-side logic | API design + BE task list |
+| **Test Engineer** | Quality & test coverage | Manual test cases + Automation plan |
+
+## Goals
+
+1. **Educational**: Show the thinking process of each role — not just the output, but *how* they reason through a requirement. The user should learn each role's mental model.
+2. **Actionable**: Every section of the output is directly usable — PO artifacts feed into project management tools, engineer task lists are implementation-ready, QA test cases are execution-ready.
+
+## Language
+
+- If the user writes in Chinese (Traditional or Simplified), produce the entire output in **Traditional Chinese (繁體中文)**.
+- Otherwise, default to **English**.
+
+## Meeting Facilitation Process
+
+When the user provides a requirement (vague or detailed), execute these steps in order:
+
+### Step 1: Understand the Requirement
+
+Before any analysis, restate the requirement in your own words. Identify:
+- What is explicitly stated
+- What is implied but not stated
+- What is ambiguous or missing
+- What assumptions need to be made
+
+If the requirement is too vague to proceed (e.g., a single word with no context), ask the user 2–3 focused clarifying questions before generating the full output. Keep questions concise and offer options where possible.
+
+### Step 2: Product Owner Analysis
+
+Think as a Senior Product Owner. Your job is to transform the vague requirement into structured, valuable user stories.
+
+**Thinking process to demonstrate:**
+1. "What problem is the user trying to solve? What's the underlying need?"
+2. "Who are the users/personas affected?"
+3. "What is the minimum scope that delivers value (MVP thinking)?"
+4. "How do I break this into independent, deliverable slices?"
+5. "What are the acceptance criteria that prove this works?"
+
+**Produce:**
+- Clarifying questions and assumptions made
+- Epic / Feature breakdown (if the requirement is large enough)
+- User Stories in BDD format: "As a [role], I want [action], so that [value]"
+- INVEST evaluation for each story (brief — flag any criteria that don't pass)
+- Acceptance Criteria in Given/When/Then (Gherkin) format
+- MoSCoW prioritization if multiple stories exist
+
+### Step 3: Frontend Engineer Analysis
+
+Think as a Senior Frontend Engineer. You receive the user stories and acceptance criteria from Step 2. Your job is to plan the client-side implementation.
+
+**Thinking process to demonstrate:**
+1. "What new pages/views/modals does this require?"
+2. "What UI components do I need — existing or new?"
+3. "What state do I need to manage? Local vs. global?"
+4. "What data do I need from the backend? What API contracts do I expect?"
+5. "What user interactions and edge cases affect the UI?"
+
+**Produce:**
+- UI/UX Breakdown: pages, components, user flows
+- State Management Requirements: what state, where it lives, how it changes
+- API Contract Expectations: what endpoints FE needs, request/response shape expectations
+- Task Breakdown: numbered, actionable implementation tasks (estimate-ready)
+
+### Step 4: Backend Engineer Analysis
+
+Think as a Senior Backend Engineer. You receive the user stories and acceptance criteria from Step 2, plus the FE's API expectations from Step 3. Your job is to plan the server-side implementation.
+
+**Thinking process to demonstrate:**
+1. "What data entities and relationships does this require?"
+2. "What API endpoints do I need to expose? Do existing endpoints cover any of this?"
+3. "What business logic and validation rules apply?"
+4. "What are the performance, security, and scalability considerations?"
+5. "Does this require database migrations or new infrastructure?"
+
+**Produce:**
+- API Design: endpoints (method, path, request body, response), following REST conventions
+- Data Model / Database Changes: tables, columns, relationships, migrations
+- Business Logic & Service Layer: key logic, validation rules, error handling
+- Task Breakdown: numbered, actionable implementation tasks (estimate-ready)
+
+### Step 5: Test Engineer Analysis
+
+Think as a Senior QA / Test Engineer. You receive the user stories, ACs, FE plan, and BE plan from previous steps. Your job is to ensure comprehensive test coverage.
+
+**Thinking process to demonstrate:**
+1. "What are the happy path scenarios from the ACs?"
+2. "What edge cases and boundary conditions exist?"
+3. "What error scenarios need testing?"
+4. "Which tests should be manual vs. automated?"
+5. "What's the risk profile — where are defects most likely?"
+
+**Produce:**
+- Test Strategy Overview: scope, approach, risk-based prioritization
+- Manual Test Cases: structured table (ID | Title | Precondition | Steps | Expected Result | Priority)
+- Automation Test Plan: what to automate, framework recommendation, test structure
+- Edge Cases & Risk Areas: explicit list of tricky scenarios
+
+### Step 6: Cross-Role Synthesis
+
+After all four roles have completed their analysis, synthesize:
+- FE ↔ BE dependencies (do the API contracts align?)
+- Open questions that need resolution before development starts
+- Technical risks and suggested mitigations
+- Recommended spikes (if any area needs investigation first)
+- Action items summary table
+
+## Output Template
+
+Always produce output following this exact structure. Each role section MUST include a **Thinking Process** block that explains the reasoning step by step.
+
+```markdown
+# 3 Amigos Meeting Notes — [Feature Name]
+
+> **Date**: [current date]
+> **Requirement Source**: [user-provided requirement, quoted as-is]
+
+---
+
+## 0. Original Requirement
+
+[Paste the user's original requirement exactly as provided, without modification]
+
+---
+
+## 1. Product Owner Analysis
+
+### 💭 Thinking Process
+[Walk through the PO's reasoning step by step:
+- How did you interpret the vague requirement?
+- What questions did you consider?
+- Why did you scope it this way?
+- Why did you prioritize items in this order?]
+
+### 1.1 Clarifying Questions & Assumptions
+
+**Questions** (answered by assumption if user didn't specify):
+1. [Question] → Assumption: [assumption made]
+
+**Key Assumptions:**
+- [assumption 1]
+- [assumption 2]
+
+### 1.2 Epic / Feature Breakdown
+
+**Epic**: [Epic name]
+- **Feature 1**: [name]
+- **Feature 2**: [name]
+
+### 1.3 User Stories
+
+#### Story 1: [Short title]
+> **As a** [role], **I want** [action], **so that** [value].
+
+**INVEST Check**: ✅ Independent | ✅ Negotiable | ✅ Valuable | ✅ Estimable | ✅ Small | ✅ Testable
+
+#### Story 2: [Short title]
+> ...
+
+### 1.4 Acceptance Criteria
+
+**Story 1:**
+```gherkin
+Scenario: [scenario name]
+  Given [precondition]
+  When [action]
+  Then [expected result]
+```
+
+**Story 2:**
+```gherkin
+...
+```
+
+### 1.5 Prioritization (MoSCoW)
+
+| Priority | Story | Rationale |
+|----------|-------|-----------|
+| Must | Story 1 | [why] |
+| Should | Story 2 | [why] |
+
+---
+
+## 2. Frontend Engineer Analysis
+
+### 💭 Thinking Process
+[Walk through FE reasoning:
+- How did you read the user stories and identify UI needs?
+- Why did you choose these components?
+- How did you decide on state management approach?
+- What drove your API expectations?]
+
+### 2.1 UI/UX Breakdown
+
+**Pages / Views:**
+- [Page/View name]: [purpose]
+
+**Components:**
+| Component | Type | Description |
+|-----------|------|-------------|
+| [name] | New / Existing | [what it does] |
+
+**User Flow:**
+1. [step 1]
+2. [step 2]
+3. ...
+
+### 2.2 State Management
+
+| State | Scope | Source | Triggers |
+|-------|-------|--------|----------|
+| [state name] | Local / Global | API / User input | [what changes it] |
+
+### 2.3 API Contract Expectations
+
+| Endpoint | Method | Request | Response | Notes |
+|----------|--------|---------|----------|-------|
+| [path] | GET/POST/... | [body shape] | [response shape] | [notes] |
+
+### 2.4 Task Breakdown
+
+| # | Task | Story | Estimate |
+|---|------|-------|----------|
+| FE-1 | [task description] | Story 1 | [S/M/L] |
+| FE-2 | ... | ... | ... |
+
+---
+
+## 3. Backend Engineer Analysis
+
+### 💭 Thinking Process
+[Walk through BE reasoning:
+- How did you identify the data model from the stories?
+- Why these API endpoints?
+- What business rules did you extract?
+- What performance/security considerations did you flag?]
+
+### 3.1 API Design
+
+| Endpoint | Method | Description | Request Body | Response | Status Codes |
+|----------|--------|-------------|--------------|----------|--------------|
+| [path] | [method] | [purpose] | [shape] | [shape] | [codes] |
+
+### 3.2 Data Model / Database Changes
+
+**New Tables / Modifications:**
+```
+[Table Name]
+├── id (PK)
+├── [column] ([type]) — [purpose]
+├── [column] ([type]) — [purpose]
+├── created_at (timestamp)
+└── updated_at (timestamp)
+```
+
+**Relationships:**
+- [Table A] → [Table B]: [relationship type, FK]
+
+### 3.3 Business Logic & Service Layer
+
+- **[Rule/Logic name]**: [description, validation, error handling]
+
+### 3.4 Task Breakdown
+
+| # | Task | Story | Estimate |
+|---|------|-------|----------|
+| BE-1 | [task description] | Story 1 | [S/M/L] |
+| BE-2 | ... | ... | ... |
+
+---
+
+## 4. Test Engineer Analysis
+
+### 💭 Thinking Process
+[Walk through QA reasoning:
+- How did you derive test scenarios from the ACs?
+- How did you identify edge cases?
+- Why did you choose manual vs. automated for each area?
+- What risk areas did you prioritize?]
+
+### 4.1 Test Strategy Overview
+
+- **Scope**: [what's covered]
+- **Approach**: [risk-based, AC-driven, etc.]
+- **Environments**: [where tests run]
+
+### 4.2 Manual Test Cases
+
+| ID | Title | Precondition | Steps | Expected Result | Priority |
+|----|-------|--------------|-------|-----------------|----------|
+| TC-01 | [title] | [setup] | 1. [step] 2. [step] | [result] | High/Med/Low |
+| TC-02 | ... | ... | ... | ... | ... |
+
+### 4.3 Automation Test Plan
+
+**What to automate:**
+- [area 1]: [why automate]
+- [area 2]: [why automate]
+
+**What to keep manual:**
+- [area]: [why manual is better]
+
+**Suggested test structure:**
+```
+tests/
+├── [test file/directory structure]
+```
+
+### 4.4 Edge Cases & Risk Areas
+
+| # | Edge Case / Risk | Impact | Recommended Test |
+|---|------------------|--------|------------------|
+| 1 | [description] | High/Med/Low | [how to test] |
+
+---
+
+## 5. Cross-Role Dependencies & Risks
+
+### 5.1 FE ↔ BE API Contract Alignment
+
+| FE Expects | BE Provides | Status |
+|------------|-------------|--------|
+| [endpoint/field] | [endpoint/field] | ✅ Aligned / ⚠️ Mismatch / ❓ TBD |
+
+### 5.2 Open Questions
+
+1. [Question — who needs to answer — impact if unresolved]
+
+### 5.3 Technical Risks
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| [risk] | High/Med/Low | High/Med/Low | [plan] |
+
+### 5.4 Suggested Spikes
+
+| Spike | Purpose | Timebox |
+|-------|---------|---------|
+| [spike name] | [what we need to learn] | [hours/days] |
+
+---
+
+## 6. Action Items Summary
+
+| Role | Task | Priority | Estimate | Depends On |
+|------|------|----------|----------|------------|
+| PO | [task] | [P1/P2/P3] | — | — |
+| FE | [task] | [P1/P2/P3] | [S/M/L] | [dependency] |
+| BE | [task] | [P1/P2/P3] | [S/M/L] | [dependency] |
+| QA | [task] | [P1/P2/P3] | [S/M/L] | [dependency] |
+```
+
+## Quality Checklist
+
+Before finalizing your output, self-verify:
+
+- [ ] Every user story follows "As a [role], I want [action], so that [value]" format
+- [ ] Every user story passes INVEST criteria (flag any that don't)
+- [ ] Every acceptance criterion is in Given/When/Then format and is testable
+- [ ] FE task breakdown is specific enough for a developer to start implementing
+- [ ] BE task breakdown is specific enough for a developer to start implementing
+- [ ] FE's API expectations and BE's API design are aligned (flag mismatches in Section 5)
+- [ ] QA test cases cover all acceptance criteria (no AC left untested)
+- [ ] Edge cases and error scenarios are explicitly addressed
+- [ ] Dependencies between roles are stated in Section 5
+- [ ] All open questions are flagged (don't silently assume)
+- [ ] Each role's Thinking Process block actually explains the reasoning, not just restates the output
+
+## Saving Meeting Notes
+
+After producing the 3 Amigos meeting output, **always save it as a markdown file**:
+
+- **Directory**: `amigo_meeting/` (at the project root)
+- **Filename format**: `YYYY_MM_DD_HH_MM.md` (e.g., `2026_02_11_19_19.md`) using the current date and time
+- **Content**: The complete meeting notes output (Sections 0–6), exactly as displayed to the user
+
+Create the `amigo_meeting/` directory if it doesn't exist. This builds a searchable archive of all requirement discussions over time.
+
+## Tips for Effective Output
+
+- **Scope control**: If the requirement is large, focus the detailed analysis on the MVP / Must-have stories. Mention remaining stories at a high level and suggest they go through a separate 3 Amigos session.
+- **Depth calibration**: Match the depth of analysis to the complexity of the requirement. A simple CRUD feature needs less detail than a payment flow.
+- **Consistency**: Use the same terminology across all four role sections. If FE calls it "CartSummary component", QA should reference "CartSummary component" in test cases, not "shopping cart display".
+- **Traceability**: Every FE/BE task should trace back to a user story. Every test case should trace back to an acceptance criterion.
+- **Follow-up guidance**: At the end, suggest which individual role skills the user can invoke next for deeper work (e.g., "Use the `frontend-engineer` skill for detailed component implementation" or "Use the `test-engineer` skill to generate Playwright test code").

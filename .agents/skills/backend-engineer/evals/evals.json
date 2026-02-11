@@ -1,0 +1,78 @@
+{
+  "skill_name": "senior-backend-engineer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我需要设计一个用户认证 API，包括注册、登录和登出功能。使用 JWT token。请给我设计建议。",
+      "expected_output": "Comprehensive authentication API design with endpoints, security considerations, and JWT implementation details",
+      "files": [],
+      "expectations": [
+        "The response includes specific API endpoint definitions (POST /register, POST /login, POST /logout)",
+        "The response discusses JWT token structure and expiry times",
+        "The response mentions password hashing (bcrypt or Argon2)",
+        "The response includes security considerations like rate limiting",
+        "The response discusses refresh token strategy",
+        "The response provides clear HTTP status codes for different scenarios"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "这个 SQL 查询很慢，帮我优化：SELECT * FROM orders JOIN users ON orders.user_id = users.id WHERE orders.status = 'pending' ORDER BY orders.created_at DESC LIMIT 20",
+      "expected_output": "Specific optimization recommendations with index suggestions and query improvements",
+      "files": [],
+      "expectations": [
+        "The response identifies the use of SELECT * as inefficient",
+        "The response recommends adding indexes on orders.status and orders.created_at",
+        "The response suggests specifying only needed columns instead of SELECT *",
+        "The response mentions using EXPLAIN ANALYZE to verify improvements",
+        "The response provides the optimized query syntax",
+        "The response discusses index strategy (composite index vs separate indexes)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "我的 API 服务器经常超时，数据库查询很多，用户量在增长。应该如何优化架构？",
+      "expected_output": "Architecture optimization recommendations including caching, database optimization, and scaling strategies",
+      "files": [],
+      "expectations": [
+        "The response recommends adding a caching layer (Redis or similar)",
+        "The response discusses database connection pooling",
+        "The response mentions database query optimization techniques",
+        "The response suggests implementing async/background jobs for heavy operations",
+        "The response discusses horizontal or vertical scaling options",
+        "The response mentions monitoring and profiling to identify bottlenecks",
+        "The response addresses the specific timeout issue with concrete solutions"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Review this Express.js code for security issues:\n\napp.post('/users', async (req, res) => {\n  const { email, password, role } = req.body;\n  const user = await db.query(`INSERT INTO users (email, password, role) VALUES ('${email}', '${password}', '${role}')`);\n  res.json(user);\n});",
+      "expected_output": "Detailed security review identifying SQL injection, missing validation, password hashing, and other issues",
+      "files": [],
+      "expectations": [
+        "The response identifies SQL injection vulnerability",
+        "The response points out that passwords should be hashed, not stored in plain text",
+        "The response mentions the need for input validation",
+        "The response identifies that role should not be user-controllable (privilege escalation risk)",
+        "The response recommends using parameterized queries or an ORM",
+        "The response suggests adding authentication/authorization checks",
+        "The response provides corrected code example or specific recommendations"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "应该选择 MongoDB 还是 PostgreSQL 来存储电商产品数据？数据结构包括产品信息、分类、库存、价格历史。",
+      "expected_output": "Technical comparison with recommendation based on e-commerce requirements",
+      "files": [],
+      "expectations": [
+        "The response analyzes the specific data structure requirements (products, categories, inventory, price history)",
+        "The response discusses relational aspects (categories, price history) favoring PostgreSQL",
+        "The response mentions ACID transactions for inventory management",
+        "The response compares query complexity for both options",
+        "The response provides a clear recommendation with reasoning",
+        "The response discusses trade-offs of each option",
+        "The response considers scalability for e-commerce use case"
+      ]
+    }
+  ]
+}
