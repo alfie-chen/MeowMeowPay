@@ -146,126 +146,267 @@ For each test case derived, determine whether it should be **manual**, **automat
 - Complexity of setup/validation (visual validation → manual; data-intensive → automate)
 - Risk level (high risk → both manual and automated)
 
-### 2. Test Automation (Playwright + Python)
+### 2. Test Automation
 
-Write production-quality automated tests using Playwright for Python. The goal is maintainable, readable, and reliable test code — not just code that works once.
+#### 2.1 Frontend & E2E (Playwright + TypeScript)
+
+Write production-quality automated tests using Playwright for TypeScript. Using TypeScript aligns with the frontend stack, allowing developers and QA to share utilities, types, and knowledge.
 
 **Architecture principles:**
 
-- **Page Object Model (POM)**: Always separate page interaction logic from test logic. Each page or major component gets its own class with descriptive methods. This makes tests resilient to UI changes — when a selector changes, you fix it in one place.
-- **Fixtures over setup/teardown**: Use pytest fixtures for browser context, page setup, authentication state, and test data. Fixtures compose well and make dependencies explicit.
-- **Explicit waits over implicit**: Use Playwright's built-in auto-waiting and `expect()` assertions rather than arbitrary sleeps. When you need custom waits, use `page.wait_for_selector()` or `page.wait_for_load_state()` with clear reasons.
-- **Data-driven testing**: Use `@pytest.mark.parametrize` for testing variations of the same flow. Keep test data in fixtures or separate data modules, not hardcoded in test bodies.
+- **Page Object Model (POM)**: Always separate page interaction logic from test logic. Each page gets its own class exporting tailored methods.
+- **Fixtures**: Use Playwright's test fixtures to extend the base `test` object. This allows you to inject custom Page Objects or authenticated states directly into tests.
+- **Explicit waits over implicit**: Use `expect()` assertions (which auto-wait) rather than arbitrary sleeps. Use `page.waitForSelector()` only when necessary.
+- **Strong Typing**: Leverage TypeScript interfaces for test data and API responses to catch errors early.
 
 **Project structure** — organize tests like this:
 
 ```
 tests/
-├── conftest.py              # Shared fixtures (browser, auth, base_url)
-├── pages/                   # Page Object classes
-│   ├── __init__.py
-│   ├── login_page.py
-│   ├── dashboard_page.py
-│   └── base_page.py         # Common page methods (navigate, wait helpers)
 ├── e2e/                     # End-to-end test suites
-│   ├── test_login.py
-│   └── test_checkout.py
-├── api/                     # API-level tests (if applicable)
-│   └── test_user_api.py
+│   ├── login.spec.ts
+│   └── checkout.spec.ts
+├── pages/                   # Page Object classes
+│   ├── LoginPage.ts
+│   ├── DashboardPage.ts
+│   └── BasePage.ts          # Common page methods
+├── fixtures/                # Custom test fixtures
+│   └── test-base.ts
 ├── data/                    # Test data and factories
-│   └── users.py
+│   └── users.ts
 └── utils/                   # Shared utilities
-    ├── helpers.py
-    └── constants.py
+    ├── helpers.ts
+    └── constants.ts
+playwright.config.ts         # Main configuration
+package.json
 ```
 
-**conftest.py essentials** — always include:
+**playwright.config.ts essentials** — standard configuration:
 
-```python
-import pytest
-from playwright.sync_api import sync_playwright, Page, Browser
+```typescript
+import { defineConfig, devices } from "@playwright/test";
 
-@pytest.fixture(scope="session")
-def browser():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        yield browser
-        browser.close()
-
-@pytest.fixture
-def page(browser: Browser):
-    context = browser.new_context()
-    page = context.new_page()
-    yield page
-    context.close()
-
-@pytest.fixture
-def base_url():
-    return "https://example.com"  # Configure per environment
+export default defineConfig({
+  testDir: "./tests/e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: "html",
+  use: {
+    baseURL: "https://example.com",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
+});
 ```
 
 **Page Object example:**
 
-```python
-from playwright.sync_api import Page, expect
+```typescript
+// tests/pages/LoginPage.ts
+import { type Page, type Locator, expect } from "@playwright/test";
 
-class LoginPage:
-    def __init__(self, page: Page, base_url: str):
-        self.page = page
-        self.base_url = base_url
-        # Locators — keep them together at the top
-        self.email_input = page.locator("#email")
-        self.password_input = page.locator("#password")
-        self.submit_button = page.locator("button[type='submit']")
-        self.error_message = page.locator(".error-alert")
+export class LoginPage {
+  readonly page: Page;
+  readonly emailInput: Locator;
+  readonly passwordInput: Locator;
+  readonly submitButton: Locator;
+  readonly errorMessage: Locator;
 
-    def navigate(self):
-        self.page.goto(f"{self.base_url}/login")
-        return self
+  constructor(page: Page) {
+    this.page = page;
+    this.emailInput = page.locator("#email");
+    this.passwordInput = page.locator("#password");
+    this.submitButton = page.locator("button[type='submit']");
+    this.errorMessage = page.locator(".error-alert");
+  }
 
-    def login(self, email: str, password: str):
-        self.email_input.fill(email)
-        self.password_input.fill(password)
-        self.submit_button.click()
-        return self
+  async navigate() {
+    await this.page.goto("/login");
+  }
 
-    def assert_error_visible(self, expected_text: str):
-        expect(self.error_message).to_be_visible()
-        expect(self.error_message).to_contain_text(expected_text)
+  async login(email: string, password: string) {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.submitButton.click();
+  }
+
+  async assertErrorVisible(expectedText: string) {
+    await expect(this.errorMessage).toBeVisible();
+    await expect(this.errorMessage).toContainText(expectedText);
+  }
+}
 ```
 
-**Test example:**
+**Test example (using fixtures):**
 
-```python
-import pytest
-from pages.login_page import LoginPage
+```typescript
+// tests/fixtures/test-base.ts
+import { test as base } from "@playwright/test";
+import { LoginPage } from "../pages/LoginPage";
 
-class TestLogin:
-    @pytest.fixture(autouse=True)
-    def setup(self, page, base_url):
-        self.login_page = LoginPage(page, base_url).navigate()
+type MyFixtures = {
+  loginPage: LoginPage;
+};
 
-    def test_successful_login(self):
-        self.login_page.login("valid@example.com", "password123")
-        # Assert redirect to dashboard
-        expect(self.login_page.page).to_have_url(re.compile(r".*/dashboard"))
+export const test = base.extend<MyFixtures>({
+  loginPage: async ({ page }, use) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.navigate();
+    await use(loginPage);
+  },
+});
+export { expect } from "@playwright/test";
+```
 
-    @pytest.mark.parametrize("email,password,error_msg", [
-        ("", "pass", "Email is required"),
-        ("bad@email", "", "Password is required"),
-        ("wrong@email.com", "wrongpass", "Invalid credentials"),
-    ])
-    def test_login_validation(self, email, password, error_msg):
-        self.login_page.login(email, password)
-        self.login_page.assert_error_visible(error_msg)
+```typescript
+// tests/e2e/login.spec.ts
+import { test, expect } from "../fixtures/test-base";
+
+test.describe("User Login", () => {
+  test("successful login redirects to dashboard", async ({
+    loginPage,
+    page,
+  }) => {
+    await loginPage.login("valid@example.com", "password123");
+    await expect(page).toHaveURL(/.*\/dashboard/);
+  });
+
+  const testCases = [
+    { email: "", pass: "pass", error: "Email is required" },
+    { email: "bad@email", pass: "", error: "Password is required" },
+    {
+      email: "wrong@email.com",
+      pass: "wrongpass",
+      error: "Invalid credentials",
+    },
+  ];
+
+  for (const tc of testCases) {
+    test(`login validation: ${tc.error}`, async ({ loginPage }) => {
+      await loginPage.login(tc.email, tc.pass);
+      await loginPage.assertErrorVisible(tc.error);
+    });
+  }
+});
 ```
 
 **Naming conventions:**
 
-- Test files: `test_<feature>.py`
-- Test classes: `Test<Feature>`
-- Test methods: `test_<what_it_verifies>` — be descriptive, e.g. `test_expired_session_redirects_to_login`
-- Page objects: `<Page>Page` class in `<page>_page.py`
+- Test files: `*.spec.ts` or `*.test.ts`
+- Page Objects: `PascalCase.ts` (e.g., `LoginPage.ts`)
+- Class names: `PascalCase`
+- Methods/Variables: `camelCase`
+
+#### 2.2 Backend & API (Python + pytest)
+
+Since the backend is **FastAPI (Python)**, use `pytest` for unit and integration testing. E2E tests check _if_ it works; Backend tests check _how_ it works internally.
+
+**Architecture principles:**
+
+- **TestClient**: Use FastAPI's `TestClient` for synchronous API testing without running a server.
+- **Direct DB Testing**: Tests should connect to a test-specific database, execute queries, and rollback transactions.
+- **Mocking**: Use `unittest.mock` or `pytest-mock` to isolate external services (e.g., payment gateways) during unit testing.
+
+**Project structure (`backend/tests/`):**
+
+```
+backend/tests/
+├── conftest.py              # Global fixtures (DB session, auth headers)
+├── units/                   # Unit tests (logic only, no DB/API)
+│   └── test_services.py
+├── integration/             # API tests (DB + API)
+│   ├── test_auth_api.py
+│   └── test_orders_api.py
+└── utils/                   # Test helpers
+```
+
+**conftest.py essentials:**
+
+```python
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.main import app
+from app.db import Base, get_db
+
+# Use an in-memory SQLite or separate Test DB container
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+
+@pytest.fixture(scope="session")
+def db_engine():
+    engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+    Base.metadata.create_all(bind=engine)
+    yield engine
+    Base.metadata.drop_all(bind=engine)
+
+@pytest.fixture
+def client(db_engine):
+    def override_get_db():
+        SessionLocal = sessionmaker(bind=db_engine)
+        db = SessionLocal()
+        try:
+            yield db
+        finally:
+            db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    with TestClient(app) as c:
+        yield c
+```
+
+**Integration Test Example:**
+
+```python
+def test_create_order(client):
+    response = client.post(
+        "/orders/",
+        json={"item_id": "foo", "amount": 100},
+        headers={"Authorization": "Bearer test-token"}
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "created"
+
+    # Verify in API that order exists
+    order_id = response.json()["id"]
+    get_res = client.get(f"/orders/{order_id}")
+    assert get_res.status_code == 200
+```
+
+**API Scenario Test (Backend "E2E") Example:**
+
+This simulates a full user journey strictly via proper API calls, bypassing the UI for speed and stability.
+
+```python
+def test_full_checkout_flow(client):
+    # 1. Register
+    client.post("/auth/register", json={"email": "buyer@test.com", "password": "pass"})
+
+    # 2. Login
+    login_res = client.post("/auth/login", data={"username": "buyer@test.com", "password": "pass"})
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 3. Create Order
+    order_res = client.post("/orders/", json={"item": "cat_food", "qty": 5}, headers=headers)
+    order_id = order_res.json()["id"]
+
+    # 4. Pay (Mocking payment gateway would be handled in conftest or here)
+    pay_res = client.post(f"/orders/{order_id}/pay", headers=headers)
+    assert pay_res.json()["status"] == "paid"
+
+    # 5. Verify Database State
+    final_state = client.get(f"/orders/{order_id}", headers=headers)
+    assert final_state.json()["status"] == "paid"
+```
 
 ### 3. Manual Test Case Design
 
@@ -317,6 +458,15 @@ Create comprehensive test plans and strategies tailored to the project's risk pr
 | Profile edit | ✅     | ✅        | ✅   | ✅          | ❌  | EP, BVA, UC        | P1       | Medium |
 
 Think about coverage gaps. A common pitfall is over-testing the happy path and under-testing error handling, edge cases, and state transitions. Call these out explicitly.
+
+**Collaboration: Developer vs QA Responsibilities:**
+
+| Responsibility | Frontend Developer                                   | QA Engineer                                                          |
+| :------------- | :--------------------------------------------------- | :------------------------------------------------------------------- |
+| **Scope**      | Feature verification, Happy Paths, basic Smoke Tests | Regression, Edge Cases, Security, Performance, E2E Architecture      |
+| **Timing**     | During development (Pre-merge)                       | During release cycle (Post-merge / Staging)                          |
+| **Goal**       | "Does it work?" (Feature Complete)                   | "Does it break? Is it solid?" (Quality Assurance)                    |
+| **Action**     | Writes initial tests for new features                | Reviews developer tests, plans deeper coverage, maintains test infra |
 
 **Test report format** — when producing a test report after a test cycle:
 
@@ -415,44 +565,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
+          node-version: 18
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          playwright install --with-deps chromium
-      - name: Run E2E tests
-        run: pytest tests/e2e/ --html=report.html --self-contained-html -v
-      - name: Upload test report
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: test-report
-          path: report.html
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 ```
 
 **When setting up test infra, think about:**
 
-- **Parallel execution**: Split test suites across workers (`pytest-xdist`)
-- **Retry logic**: Flaky test handling with `pytest-rerunfailures` — but track flaky tests, don't just hide them
-- **Reporting**: HTML reports, Allure integration, or custom dashboards
+- **Parallel execution**: Playwright runs tests in parallel by default (adjust `workers` in config)
+- **Retry logic**: Configure `retries` in `playwright.config.ts` to handle flaky tests automatically
+- **Reporting**: Use built-in reporters (HTML, list, line) or integrate with Allure
 - **Test data management**: Database seeding, API-based setup, fixture factories
-- **Environment configuration**: `.env` files, config modules, or environment-specific fixtures
-- **Docker**: Containerized test environments for consistency
-- **Device farms**: For mobile testing, integrate with cloud device farms (BrowserStack, Sauce Labs, AWS Device Farm)
+- **Environment configuration**: `dotenv` integration via `playwright.config.ts`
 
-**requirements.txt for a solid Playwright + Python setup:**
+**package.json dependencies:**
 
-```
-playwright>=1.40.0
-pytest>=7.4.0
-pytest-playwright>=0.4.0
-pytest-html>=4.0.0
-pytest-xdist>=3.5.0
-pytest-rerunfailures>=13.0
-python-dotenv>=1.0.0
-allure-pytest>=2.13.0
+```json
+{
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
 ```
 
 ### 7. Exploratory Testing

@@ -767,7 +767,7 @@ When the user wants to test their code:
 **Unit tests** (for utilities and hooks):
 
 ```tsx
-// Use Vitest or Jest
+// Use Vitest
 import { render, screen } from "@testing-library/react";
 import { Button } from "./Button";
 
@@ -805,8 +805,11 @@ test("Login form submits with valid credentials", async () => {
 });
 ```
 
-**E2E tests** (for full user flows):
-Suggest Playwright or Cypress for end-to-end testing.
+**E2E tests** (Feature verification):
+
+- Focus on "Happy Paths" and critical user flows for the features being built.
+- Use Playwright or Cypress to ensure the feature adheres to requirements before handover.
+- For complex scenarios, regression suites, or test infrastructure, collaborate with QA/Test Engineer.
 
 ## Resources
 
