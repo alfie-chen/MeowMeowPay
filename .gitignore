@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 .venv/
 啟動專案.md
+amigo_meeting/
