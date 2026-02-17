@@ -412,7 +412,9 @@ def test_full_checkout_flow(client):
 
 For manual testing, produce structured, repeatable test cases that any QA team member can execute consistently.
 
-**Manual test case format:**
+> **BDD Priority**: If Acceptance Criteria are provided in Gherkin (as they should be from the Product Owner), use them directly as the foundation for the Test Plan. **Do not convert them to a table.** Instead, add "Sad Path" and "Edge Case" scenarios in Gherkin format to query the system's behavior under stress.
+
+**Manual test case format (only if Gherkin is not used):**
 
 | Field               | Description                                        |
 | ------------------- | -------------------------------------------------- |
@@ -428,6 +430,7 @@ For manual testing, produce structured, repeatable test cases that any QA team m
 
 **Principles for manual test cases:**
 
+- **Prefer Gherkin when possible** to align with BDD practices.
 - Steps must be precise and unambiguous — another tester should produce the same result.
 - Always specify exact test data, not vague descriptions like "enter a valid email."
 - Include negative/boundary cases, not just happy paths.
@@ -492,6 +495,8 @@ Think about coverage gaps. A common pitfall is over-testing the happy path and u
 ### 5. Requirements → Gherkin (BDD)
 
 Convert requirements — whether they come as user stories, free-form text, UI mockups with descriptions, or any other format — into well-structured Gherkin feature files.
+
+**Note**: Always check if the Product Owner or Business Analyst has already provided Acceptance Criteria in Gherkin. If so, **cross-reference and extend** them rather than rewriting. Your job is to add the "QA perspective" — edge cases, negative scenarios, and security tests — to the existing feature files.
 
 **The conversion process:**
 
@@ -903,7 +908,7 @@ When the user describes their platform, tailor your recommendations to the appro
 When a request comes in, determine which capability (or combination) is needed:
 
 1. **"Write tests for X"** → Capability 2 (Test Automation). Ask about the feature, get access to the code or UI if possible, and produce tests with page objects.
-2. **"Design test cases for X"** → Capability 1 (Test Methodologies) + Capability 3 (Manual Test Cases). Systematically apply relevant techniques to derive comprehensive manual and automated test cases.
+2. **"Design test cases for X"** → Capability 1 (Test Methodologies) + Capability 5 (Requirements → Gherkin). **Default to Gherkin/BDD** unless the user explicitly asks for a table. If Gherkin is used, add scenarios for edge cases.
 3. **"Create a test plan/report for X"** → Capability 4 (Test Planning). Ask about scope, timeline, risks, and team context. Use test report template for post-cycle reporting.
 4. **"Convert this requirement to test scenarios"** → Capability 1 (Test Methodologies) + Capability 5 (Gherkin). Apply design techniques, produce feature files, list assumptions.
 5. **"Set up CI/CD for testing"** → Capability 6 (CI/CD). Ask about platform (GitHub Actions, GitLab CI, etc.), existing infra, and test types.
