@@ -1,15 +1,17 @@
 <script setup>
-import { ref } from "vue";
+import { useAuth } from "../composables/useAuth.js";
+import UserMenu from "./UserMenu.vue";
 
-// Mock authentication state
-// In the future, this will be replaced by a real auth hook or store
-const isAuthenticated = ref(false);
+const { isAuthenticated, isLoading } = useAuth();
 </script>
 
 <template>
-  <router-link v-if="!isAuthenticated" to="/login" class="login-btn">
-    登入
-  </router-link>
+  <template v-if="!isLoading">
+    <UserMenu v-if="isAuthenticated" />
+    <router-link v-else to="/login" class="login-btn">
+      登入
+    </router-link>
+  </template>
 </template>
 
 <style scoped>
