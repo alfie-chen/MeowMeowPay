@@ -1,2 +1,9 @@
 fastapi
 uvicorn[standard]
+sqlalchemy
+psycopg[binary]
+python-jose[cryptography]
+httpx
+python-dotenv
+alembic
+pydantic-settings
