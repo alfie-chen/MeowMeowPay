@@ -791,6 +791,62 @@ Use SQL to directly verify data correctness in the database as part of the testi
 - API testing — confirm API responses match actual database state
 - Regression testing — verify data integrity after code changes
 
+**Detecting Database Changes from Requirements**
+
+In 3 Amigos meetings or during requirement analysis, proactively scan for signals that the backend will modify the database schema. Schema migrations carry **data integrity risk** — existing data can be corrupted or lost if migrations are incorrect. Identifying these signals early lets you plan SQL-level test cases before implementation begins.
+
+| Signal in Requirement | Likely DB Change | Test Focus |
+|----------------------|------------------|------------|
+| New resource/entity introduced (e.g., "users can register with email") | New column on existing table or new table | Column exists, correct type, nullability |
+| Extending existing feature ("users can now also...") | New nullable column on existing table | Existing rows not affected by migration |
+| Field changes from optional → required (or vice versa) | Column nullability change | NULL insert test; NOT NULL constraint enforcement |
+| "Each X belongs to a Y" / new relationship | New foreign key | Referential integrity; cascade behavior |
+| "X must be unique" / uniqueness rule added | New UNIQUE constraint | Duplicate insertion rejected with correct error |
+| "Track history / audit log of..." | New audit table or timestamp columns | Row created on each state change; no missing entries |
+| Auth method added alongside existing one (e.g., Google + Email) | Existing NOT-NULL column → NULLABLE | Existing rows survive migration with data intact |
+| "Store / save / record" a new piece of user data | New column or new table | Column present, correct default, no orphaned rows |
+
+**SQL Test Templates for Common Schema Changes:**
+
+```sql
+-- 1. Verify a new column was added with correct type and nullability
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name = 'users' AND column_name = 'password_hash';
+-- Expected: 1 row returned; is_nullable = 'YES' for optional columns
+
+-- 2. Verify existing rows survived a migration (column made nullable)
+SELECT COUNT(*) FROM users WHERE google_id IS NULL AND auth_provider = 'google';
+-- Expected: 0 — existing Google users must still have google_id populated
+
+-- 3. Verify new UNIQUE constraint rejects duplicates
+INSERT INTO users (email, name) VALUES ('dup@test.com', 'A');
+INSERT INTO users (email, name) VALUES ('dup@test.com', 'B');
+-- Expected: second insert raises unique constraint violation
+
+-- 4. Verify NOT NULL constraint is enforced on required column
+INSERT INTO users (email, name, password_hash) VALUES ('x@test.com', 'X', NULL);
+-- Expected: raises NOT NULL constraint violation
+
+-- 5. Verify foreign key referential integrity
+INSERT INTO orders (user_id, amount) VALUES ('00000000-0000-0000-0000-000000000000', 100);
+-- Expected: raises foreign key constraint violation (user does not exist)
+
+-- 6. Verify ON DELETE behavior (CASCADE vs RESTRICT)
+DELETE FROM users WHERE id = '<known-user-uuid>';
+SELECT COUNT(*) FROM orders WHERE user_id = '<known-user-uuid>';
+-- CASCADE: expected 0 rows remain; RESTRICT: expected DELETE to fail
+
+-- 7. Verify backfill values after migration (e.g., new auth_provider column)
+SELECT COUNT(*) FROM users WHERE auth_provider IS NULL;
+-- Expected: 0 — all existing rows must have been backfilled
+
+-- 8. Verify row count unchanged after migration (no data loss)
+-- Run before migration: SELECT COUNT(*) FROM users; → capture baseline
+-- Run after migration:  SELECT COUNT(*) FROM users;
+-- Expected: same count as baseline
+```
+
 **Common validation patterns:**
 
 ```sql

@@ -22,6 +22,21 @@ The four roles at the table:
 1. **Educational**: Show the thinking process of each role — not just the output, but *how* they reason through a requirement. The user should learn each role's mental model.
 2. **Actionable**: Every section of the output is directly usable — PO artifacts feed into project management tools, engineer task lists are implementation-ready, QA test cases are execution-ready.
 
+## Skill Initialization
+
+At the start of every 3 Amigos session, before any role analysis, read the following
+skill files using the Read tool to load each role's expertise framework:
+
+1. **Product Owner**: Read `.claude/skills/product-owner/SKILL.md`
+2. **Frontend Engineer**: Read `.claude/skills/frontend-engineer/SKILL.md`
+3. **Backend Engineer**: Read `.claude/skills/backend-engineer/SKILL.md`
+4. **Test Engineer**: Read `.claude/skills/test-engineer/SKILL.md`
+
+Apply each skill's principles, methodologies, and output frameworks when conducting
+the corresponding role's analysis in Steps 2–5. The individual skills define **how**
+each role thinks; this three-amigos skill defines **what** to output and **how** to
+structure the meeting notes.
+
 ## Language
 
 - If the user writes in Chinese (Traditional or Simplified), produce the entire output in **Traditional Chinese (繁體中文)**.
@@ -43,6 +58,8 @@ If the requirement is too vague to proceed (e.g., a single word with no context)
 
 ### Step 2: Product Owner Analysis
 
+> Apply the Product Owner skill framework loaded during initialization.
+
 Think as a Senior Product Owner. Your job is to transform the vague requirement into structured, valuable user stories.
 
 **Thinking process to demonstrate:**
@@ -52,15 +69,9 @@ Think as a Senior Product Owner. Your job is to transform the vague requirement 
 4. "How do I break this into independent, deliverable slices?"
 5. "What are the acceptance criteria that prove this works?"
 
-**Produce:**
-- Clarifying questions and assumptions made
-- Epic / Feature breakdown (if the requirement is large enough)
-- User Stories in BDD format: "As a [role], I want [action], so that [value]"
-- INVEST evaluation for each story (brief — flag any criteria that don't pass)
-- Acceptance Criteria in Given/When/Then (Gherkin) format
-- MoSCoW prioritization if multiple stories exist
-
 ### Step 3: Frontend Engineer Analysis
+
+> Apply the Frontend Engineer skill framework loaded during initialization.
 
 Think as a Senior Frontend Engineer. You receive the user stories and acceptance criteria from Step 2. Your job is to plan the client-side implementation.
 
@@ -71,13 +82,9 @@ Think as a Senior Frontend Engineer. You receive the user stories and acceptance
 4. "What data do I need from the backend? What API contracts do I expect?"
 5. "What user interactions and edge cases affect the UI?"
 
-**Produce:**
-- UI/UX Breakdown: pages, components, user flows
-- State Management Requirements: what state, where it lives, how it changes
-- API Contract Expectations: what endpoints FE needs, request/response shape expectations
-- Task Breakdown: numbered, actionable implementation tasks (estimate-ready)
-
 ### Step 4: Backend Engineer Analysis
+
+> Apply the Backend Engineer skill framework loaded during initialization.
 
 Think as a Senior Backend Engineer. You receive the user stories and acceptance criteria from Step 2, plus the FE's API expectations from Step 3. Your job is to plan the server-side implementation.
 
@@ -88,13 +95,9 @@ Think as a Senior Backend Engineer. You receive the user stories and acceptance 
 4. "What are the performance, security, and scalability considerations?"
 5. "Does this require database migrations or new infrastructure?"
 
-**Produce:**
-- API Design: endpoints (method, path, request body, response), following REST conventions
-- Data Model / Database Changes: tables, columns, relationships, migrations
-- Business Logic & Service Layer: key logic, validation rules, error handling
-- Task Breakdown: numbered, actionable implementation tasks (estimate-ready)
-
 ### Step 5: Test Engineer Analysis
+
+> Apply the Test Engineer skill framework loaded during initialization.
 
 Think as a Senior QA / Test Engineer. You receive the user stories, ACs, FE plan, and BE plan from previous steps. Your job is to ensure comprehensive test coverage.
 
@@ -104,12 +107,6 @@ Think as a Senior QA / Test Engineer. You receive the user stories, ACs, FE plan
 3. "What error scenarios need testing?"
 4. "Which tests should be manual vs. automated?"
 5. "What's the risk profile — where are defects most likely?"
-
-**Produce:**
-- Test Strategy Overview: scope, approach, risk-based prioritization
-- Manual Test Cases: structured table (ID | Title | Precondition | Steps | Expected Result | Priority)
-- Automation Test Plan: what to automate, framework recommendation, test structure
-- Edge Cases & Risk Areas: explicit list of tricky scenarios
 
 ### Step 6: Cross-Role Synthesis
 
@@ -141,11 +138,7 @@ Always produce output following this exact structure. Each role section MUST inc
 ## 1. Product Owner Analysis
 
 ### 💭 Thinking Process
-[Walk through the PO's reasoning step by step:
-- How did you interpret the vague requirement?
-- What questions did you consider?
-- Why did you scope it this way?
-- Why did you prioritize items in this order?]
+[Walk through the 5 questions from Step 2 — show your actual reasoning, not just the output]
 
 ### 1.1 Clarifying Questions & Assumptions
 
@@ -199,11 +192,7 @@ Scenario: [scenario name]
 ## 2. Frontend Engineer Analysis
 
 ### 💭 Thinking Process
-[Walk through FE reasoning:
-- How did you read the user stories and identify UI needs?
-- Why did you choose these components?
-- How did you decide on state management approach?
-- What drove your API expectations?]
+[Walk through the 5 questions from Step 3 — show your actual reasoning, not just the output]
 
 ### 2.1 UI/UX Breakdown
 
@@ -244,11 +233,7 @@ Scenario: [scenario name]
 ## 3. Backend Engineer Analysis
 
 ### 💭 Thinking Process
-[Walk through BE reasoning:
-- How did you identify the data model from the stories?
-- Why these API endpoints?
-- What business rules did you extract?
-- What performance/security considerations did you flag?]
+[Walk through the 5 questions from Step 4 — show your actual reasoning, not just the output]
 
 ### 3.1 API Design
 
@@ -287,11 +272,7 @@ Scenario: [scenario name]
 ## 4. Test Engineer Analysis
 
 ### 💭 Thinking Process
-[Walk through QA reasoning:
-- How did you derive test scenarios from the ACs?
-- How did you identify edge cases?
-- Why did you choose manual vs. automated for each area?
-- What risk areas did you prioritize?]
+[Walk through the 5 questions from Step 5 — show your actual reasoning, not just the output]
 
 ### 4.1 Test Strategy Overview
 
@@ -369,32 +350,30 @@ tests/
 
 Before finalizing your output, self-verify:
 
-- [ ] Every user story follows "As a [role], I want [action], so that [value]" format
-- [ ] Every user story passes INVEST criteria (flag any that don't)
-- [ ] Every acceptance criterion is in Given/When/Then format and is testable
-- [ ] FE task breakdown is specific enough for a developer to start implementing
-- [ ] BE task breakdown is specific enough for a developer to start implementing
 - [ ] FE's API expectations and BE's API design are aligned (flag mismatches in Section 5)
 - [ ] QA test cases cover all acceptance criteria (no AC left untested)
 - [ ] Edge cases and error scenarios are explicitly addressed
-- [ ] Dependencies between roles are stated in Section 5
 - [ ] All open questions are flagged (don't silently assume)
 - [ ] Each role's Thinking Process block actually explains the reasoning, not just restates the output
 
 ## Saving Meeting Notes
 
-After producing the 3 Amigos meeting output, **always save it as a markdown file**:
+**To save tokens, do NOT print the full meeting notes to the terminal.**
 
-- **Directory**: `amigo_meeting/` (at the project root)
-- **Filename format**: `YYYY_MM_DD_HH_MM.md` (e.g., `2026_02_11_19_19.md`) using the current date and time
-- **Content**: The complete meeting notes output (Sections 0–6), exactly as displayed to the user
+Instead:
+1. Write the complete output (Sections 0–6) **directly to a markdown file** using the Write tool.
+2. After saving, reply to the user with only:
+   - The filename (e.g., `amigo_meeting/2026_02_18_14_30.md`)
+   - A 3–5 bullet summary of the most important findings (open questions, critical risks, recommended next steps)
 
-Create the `amigo_meeting/` directory if it doesn't exist. This builds a searchable archive of all requirement discussions over time.
+**File location rules:**
+- **Directory**: `amigo_meeting/` (at the project root) — create if it doesn't exist
+- **Filename format**: `YYYY_MM_DD_HH_MM.md` using the current date and time
+
+This keeps the conversation context small and avoids accumulating large amounts of input tokens in subsequent turns.
 
 ## Tips for Effective Output
 
 - **Scope control**: If the requirement is large, focus the detailed analysis on the MVP / Must-have stories. Mention remaining stories at a high level and suggest they go through a separate 3 Amigos session.
 - **Depth calibration**: Match the depth of analysis to the complexity of the requirement. A simple CRUD feature needs less detail than a payment flow.
-- **Consistency**: Use the same terminology across all four role sections. If FE calls it "CartSummary component", QA should reference "CartSummary component" in test cases, not "shopping cart display".
-- **Traceability**: Every FE/BE task should trace back to a user story. Every test case should trace back to an acceptance criterion.
 - **Follow-up guidance**: At the end, suggest which individual role skills the user can invoke next for deeper work (e.g., "Use the `frontend-engineer` skill for detailed component implementation" or "Use the `test-engineer` skill to generate Playwright test code").

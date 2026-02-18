@@ -138,7 +138,6 @@ When analyzing any requirement, follow this process:
 13. **Check API contracts** → Apply Contract Testing, Schema Validation, and Idempotency Testing
 14. **Verify compatibility scope** → Apply Cross-Browser, Backward Compatibility, and Device Compatibility Testing
 15. **Consider risk profile** → Apply Risk-Based Testing to prioritize all of the above
-16. **Analyze database impact** → From Amigo meetings/requirements, deduce schema changes and draft SQL verification queries (see Section 11)
 
 For each test case derived, determine whether it should be **manual**, **automated**, or **both**, based on:
 
@@ -781,20 +780,7 @@ Test payment flows end-to-end with the rigor required for financial systems. Pay
 
 ### 11. SQL Data Validation for Testing
 
-Use SQL to directly verify data correctness in the database as part of the testing process. **A Senior Test Engineer does not wait for developers to provide SQL**; they proactively deduce potential database changes from Amigo meetings and requirements, then design SQL queries to verify them.
-
-**11.1 Proactive Analysis: From Requirement to SQL**
-
-During requirements analysis (e.g., Amigo meetings), ask yourself: "How will this feature change the data?"
-
-| Requirement Pattern                                              | Implied Database Change                                | Testing Strategy                                                            | SQL Verification Syntax (Example)                                                                                                                                 |
-| :--------------------------------------------------------------- | :----------------------------------------------------- | :-------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **"New Registration Field"**<br>(e.g., "User adds phone number") | `ALTER TABLE` (add column)<br>or `INSERT` (new record) | Verify column exists, type is correct, constraint (unique?) is enforced.    | `SELECT phone_number FROM users WHERE email = 'test@example.com';`<br>`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users';` |
-| **"Status Change"**<br>(e.g., "Order moves to Shipping")         | `UPDATE` operation<br>State transition                 | Verify status column updates correctly. Check timestamps (`updated_at`).    | `SELECT status, updated_at FROM orders WHERE id = 'ORD-123';`<br>_(Expect status='SHIPPED' and updated_at > created_at)_                                          |
-| **"Soft Delete"**<br>(e.g., "Archive project")                   | `UPDATE` (is_deleted=true)                             | Verify record is **not** usually returned, but exists in DB with flag.      | `SELECT * FROM projects WHERE id = 'P-1' AND is_deleted = TRUE;`                                                                                                  |
-| **"User Constraints"**<br>(e.g., "One active coupon per user")   | `UNIQUE` constraint or Logic                           | Attempt to create duplicate; verify DB rejects it or app logic prevents it. | `SELECT user_id, count(*) FROM user_coupons WHERE is_active = TRUE GROUP BY user_id HAVING count(*) > 1;`<br>_(Should return 0 rows)_                             |
-
-**11.2 Common Validation Patterns**
+Use SQL to directly verify data correctness in the database as part of the testing process. Database validation is essential for confirming that the application correctly persists, transforms, and retrieves data — UI verification alone is not sufficient.
 
 **When to use SQL validation:**
 
@@ -804,6 +790,62 @@ During requirements analysis (e.g., Amigo meetings), ask yourself: "How will thi
 - Batch processing — verify all records were processed correctly
 - API testing — confirm API responses match actual database state
 - Regression testing — verify data integrity after code changes
+
+**Detecting Database Changes from Requirements**
+
+In 3 Amigos meetings or during requirement analysis, proactively scan for signals that the backend will modify the database schema. Schema migrations carry **data integrity risk** — existing data can be corrupted or lost if migrations are incorrect. Identifying these signals early lets you plan SQL-level test cases before implementation begins.
+
+| Signal in Requirement | Likely DB Change | Test Focus |
+|----------------------|------------------|------------|
+| New resource/entity introduced (e.g., "users can register with email") | New column on existing table or new table | Column exists, correct type, nullability |
+| Extending existing feature ("users can now also...") | New nullable column on existing table | Existing rows not affected by migration |
+| Field changes from optional → required (or vice versa) | Column nullability change | NULL insert test; NOT NULL constraint enforcement |
+| "Each X belongs to a Y" / new relationship | New foreign key | Referential integrity; cascade behavior |
+| "X must be unique" / uniqueness rule added | New UNIQUE constraint | Duplicate insertion rejected with correct error |
+| "Track history / audit log of..." | New audit table or timestamp columns | Row created on each state change; no missing entries |
+| Auth method added alongside existing one (e.g., Google + Email) | Existing NOT-NULL column → NULLABLE | Existing rows survive migration with data intact |
+| "Store / save / record" a new piece of user data | New column or new table | Column present, correct default, no orphaned rows |
+
+**SQL Test Templates for Common Schema Changes:**
+
+```sql
+-- 1. Verify a new column was added with correct type and nullability
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name = 'users' AND column_name = 'password_hash';
+-- Expected: 1 row returned; is_nullable = 'YES' for optional columns
+
+-- 2. Verify existing rows survived a migration (column made nullable)
+SELECT COUNT(*) FROM users WHERE google_id IS NULL AND auth_provider = 'google';
+-- Expected: 0 — existing Google users must still have google_id populated
+
+-- 3. Verify new UNIQUE constraint rejects duplicates
+INSERT INTO users (email, name) VALUES ('dup@test.com', 'A');
+INSERT INTO users (email, name) VALUES ('dup@test.com', 'B');
+-- Expected: second insert raises unique constraint violation
+
+-- 4. Verify NOT NULL constraint is enforced on required column
+INSERT INTO users (email, name, password_hash) VALUES ('x@test.com', 'X', NULL);
+-- Expected: raises NOT NULL constraint violation
+
+-- 5. Verify foreign key referential integrity
+INSERT INTO orders (user_id, amount) VALUES ('00000000-0000-0000-0000-000000000000', 100);
+-- Expected: raises foreign key constraint violation (user does not exist)
+
+-- 6. Verify ON DELETE behavior (CASCADE vs RESTRICT)
+DELETE FROM users WHERE id = '<known-user-uuid>';
+SELECT COUNT(*) FROM orders WHERE user_id = '<known-user-uuid>';
+-- CASCADE: expected 0 rows remain; RESTRICT: expected DELETE to fail
+
+-- 7. Verify backfill values after migration (e.g., new auth_provider column)
+SELECT COUNT(*) FROM users WHERE auth_provider IS NULL;
+-- Expected: 0 — all existing rows must have been backfilled
+
+-- 8. Verify row count unchanged after migration (no data loss)
+-- Run before migration: SELECT COUNT(*) FROM users; → capture baseline
+-- Run after migration:  SELECT COUNT(*) FROM users;
+-- Expected: same count as baseline
+```
 
 **Common validation patterns:**
 
