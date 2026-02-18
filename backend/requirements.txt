@@ -7,5 +7,7 @@ httpx
 python-dotenv
 alembic
 pydantic-settings
+bcrypt
+pydantic[email]
 pytest
 pytest-asyncio

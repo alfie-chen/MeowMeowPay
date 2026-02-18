@@ -1,15 +1,15 @@
 from urllib.parse import urlencode
 
 import httpx
-from fastapi import APIRouter, Depends, Response
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
-from app.auth import create_access_token, get_current_user
+from app.auth import create_access_token, get_current_user, hash_password
 from app.config import settings
 from app.database import get_db
 from app.models import User
-from app.schemas import UserResponse
+from app.schemas import RegisterRequest, UserResponse
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -80,6 +80,38 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
         samesite="lax",
     )
     return response
+
+
+@router.post("/register", response_model=UserResponse, status_code=201)
+def register(body: RegisterRequest, response: Response, db: Session = Depends(get_db)):
+    # Normalize email to lowercase to prevent case-variant duplicates
+    email = body.email.lower()
+
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Email already registered")
+
+    user = User(
+        email=email,
+        name=body.name.strip(),
+        password_hash=hash_password(body.password),
+        auth_provider="email",
+        avatar_url=None,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    jwt_token = create_access_token(str(user.id))
+    response.set_cookie(
+        key=settings.COOKIE_NAME,
+        value=jwt_token,
+        max_age=settings.COOKIE_MAX_AGE,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite="lax",
+    )
+    return user
 
 
 @router.get("/me", response_model=UserResponse)

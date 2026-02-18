@@ -13,10 +13,12 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True, default=uuid.uuid4
     )
-    google_id: Mapped[str] = mapped_column(String, unique=True, index=True)
+    google_id: Mapped[str | None] = mapped_column(String, unique=True, index=True, nullable=True)
     email: Mapped[str] = mapped_column(String, unique=True)
     name: Mapped[str] = mapped_column(String)
     avatar_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    password_hash: Mapped[str | None] = mapped_column(String, nullable=True)
+    auth_provider: Mapped[str] = mapped_column(String, nullable=False, default="google")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

@@ -64,13 +64,14 @@ def client(db_session):
 
 @pytest.fixture()
 def mock_user(db_session):
-    """Pre-create a user in the test DB."""
+    """Pre-create a Google-authenticated user in the test DB."""
     user = User(
         id=uuid.uuid4(),
         google_id="google-123",
         email="test@example.com",
         name="Test User",
         avatar_url="https://example.com/avatar.png",
+        auth_provider="google",
     )
     db_session.add(user)
     db_session.commit()

@@ -1,4 +1,9 @@
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+import RegisterModal from "../components/RegisterModal.vue";
+
+const showRegisterModal = ref(false);
+</script>
 
 <template>
   <div class="landing">
@@ -10,6 +15,9 @@
           MeowMeow<span class="hero-highlight">Pay</span>
         </h1>
         <p class="hero-subtitle">Something purrfect is on the way.</p>
+        <button class="hero-cta" @click="showRegisterModal = true">
+          立即搶先註冊
+        </button>
         <div class="hero-cat">🐾</div>
       </div>
     </main>
@@ -17,6 +25,11 @@
     <footer class="footer">
       <p>&copy; 2026 MeowMeowPay</p>
     </footer>
+
+    <RegisterModal
+      v-if="showRegisterModal"
+      @close="showRegisterModal = false"
+    />
   </div>
 </template>
 
@@ -108,7 +121,39 @@
   font-size: var(--font-size-xl);
   color: var(--color-text-secondary);
   max-width: 480px;
-  margin: 0 auto var(--space-12);
+  margin: 0 auto var(--space-8);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-8);
+  margin-bottom: var(--space-12);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: hsl(0, 0%, 100%);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: opacity var(--transition-base), transform var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-cta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.hero-cta:active {
+  transform: translateY(0);
+}
+
+.hero-cta:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 3px;
 }
 
 .hero-cat {
