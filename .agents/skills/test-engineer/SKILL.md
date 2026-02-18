@@ -138,6 +138,7 @@ When analyzing any requirement, follow this process:
 13. **Check API contracts** → Apply Contract Testing, Schema Validation, and Idempotency Testing
 14. **Verify compatibility scope** → Apply Cross-Browser, Backward Compatibility, and Device Compatibility Testing
 15. **Consider risk profile** → Apply Risk-Based Testing to prioritize all of the above
+16. **Analyze database impact** → From Amigo meetings/requirements, deduce schema changes and draft SQL verification queries (see Section 11)
 
 For each test case derived, determine whether it should be **manual**, **automated**, or **both**, based on:
 
@@ -780,7 +781,20 @@ Test payment flows end-to-end with the rigor required for financial systems. Pay
 
 ### 11. SQL Data Validation for Testing
 
-Use SQL to directly verify data correctness in the database as part of the testing process. Database validation is essential for confirming that the application correctly persists, transforms, and retrieves data — UI verification alone is not sufficient.
+Use SQL to directly verify data correctness in the database as part of the testing process. **A Senior Test Engineer does not wait for developers to provide SQL**; they proactively deduce potential database changes from Amigo meetings and requirements, then design SQL queries to verify them.
+
+**11.1 Proactive Analysis: From Requirement to SQL**
+
+During requirements analysis (e.g., Amigo meetings), ask yourself: "How will this feature change the data?"
+
+| Requirement Pattern                                              | Implied Database Change                                | Testing Strategy                                                            | SQL Verification Syntax (Example)                                                                                                                                 |
+| :--------------------------------------------------------------- | :----------------------------------------------------- | :-------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **"New Registration Field"**<br>(e.g., "User adds phone number") | `ALTER TABLE` (add column)<br>or `INSERT` (new record) | Verify column exists, type is correct, constraint (unique?) is enforced.    | `SELECT phone_number FROM users WHERE email = 'test@example.com';`<br>`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users';` |
+| **"Status Change"**<br>(e.g., "Order moves to Shipping")         | `UPDATE` operation<br>State transition                 | Verify status column updates correctly. Check timestamps (`updated_at`).    | `SELECT status, updated_at FROM orders WHERE id = 'ORD-123';`<br>_(Expect status='SHIPPED' and updated_at > created_at)_                                          |
+| **"Soft Delete"**<br>(e.g., "Archive project")                   | `UPDATE` (is_deleted=true)                             | Verify record is **not** usually returned, but exists in DB with flag.      | `SELECT * FROM projects WHERE id = 'P-1' AND is_deleted = TRUE;`                                                                                                  |
+| **"User Constraints"**<br>(e.g., "One active coupon per user")   | `UNIQUE` constraint or Logic                           | Attempt to create duplicate; verify DB rejects it or app logic prevents it. | `SELECT user_id, count(*) FROM user_coupons WHERE is_active = TRUE GROUP BY user_id HAVING count(*) > 1;`<br>_(Should return 0 rows)_                             |
+
+**11.2 Common Validation Patterns**
 
 **When to use SQL validation:**
 
