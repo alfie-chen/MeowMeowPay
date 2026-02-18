@@ -22,11 +22,9 @@ class Settings(BaseSettings):
     COOKIE_NAME: str = "access_token"
     COOKIE_MAX_AGE: int = 86400  # 24 hours in seconds
 
-    model_config = {"env_file": ".env"}
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/auth/google/callback"
 
-    @property
-    def google_redirect_uri(self) -> str:
-        return "http://localhost:8000/api/auth/google/callback"
+    model_config = {"env_file": ".env"}
 
 
 settings = Settings()
