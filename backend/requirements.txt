@@ -7,3 +7,5 @@ httpx
 python-dotenv
 alembic
 pydantic-settings
+pytest
+pytest-asyncio

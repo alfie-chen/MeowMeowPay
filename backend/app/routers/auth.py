@@ -18,7 +18,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 def google_login():
     params = urlencode({
         "client_id": settings.GOOGLE_CLIENT_ID,
-        "redirect_uri": settings.google_redirect_uri,
+        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
         "response_type": "code",
         "scope": "openid email profile",
         "access_type": "offline",
@@ -37,7 +37,7 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
                 "code": code,
                 "client_id": settings.GOOGLE_CLIENT_ID,
                 "client_secret": settings.GOOGLE_CLIENT_SECRET,
-                "redirect_uri": settings.google_redirect_uri,
+                "redirect_uri": settings.GOOGLE_REDIRECT_URI,
                 "grant_type": "authorization_code",
             },
         )
